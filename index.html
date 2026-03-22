@@ -1,0 +1,3822 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學術工具集</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #e8e3d8; --bg2: #f6f3ee; --bg3: #ede9e0;
+      --border: rgba(50,32,10,0.10); --border2: rgba(50,32,10,0.18);
+      --t1: #1c1812; --t2: #6b5e4e; --t3: #a8967e;
+      --cyan: #2a4faa; --cyan-dim: rgba(42,79,170,0.08);
+      --amber: #c24128;
+    }
+    html, body { height: 100%; font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--t1); display: flex; flex-direction: column; }
+
+    .navbar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 6px rgba(50,32,10,0.07);
+      position: sticky; top: 0; z-index: 100; flex-shrink: 0;
+    }
+    .navbar::before {
+      content: ''; display: block; height: 3px;
+      background: linear-gradient(90deg, #1a2f6e 0%, var(--cyan) 55%, var(--amber) 100%);
+    }
+    .nav-inner {
+      max-width: 1400px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; height: 54px; gap: 0;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif; font-style: italic;
+      font-size: 20px; color: #1a2f6e; letter-spacing: 0.04em;
+      margin-right: 28px; white-space: nowrap; flex-shrink: 0;
+    }
+    .nav-logo small {
+      font-family: 'IBM Plex Mono', monospace; font-style: normal;
+      font-size: 9px; letter-spacing: 0.14em; color: var(--t3);
+      font-weight: 600; vertical-align: middle; margin-left: 8px;
+    }
+    .nav-tabs { display: flex; gap: 4px; align-items: center; }
+    .nav-tab {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 14px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--t2);
+      border: 1px solid transparent; background: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .nav-tab:hover { background: var(--bg3); color: var(--t1); border-color: var(--border); }
+    .nav-tab.active { background: var(--cyan-dim); color: var(--cyan); border-color: rgba(42,79,170,0.25); font-weight: 600; }
+    .nav-badge {
+      font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.08em; padding: 1px 5px; border-radius: 3px;
+      background: var(--border); color: var(--t3); text-transform: uppercase;
+    }
+    .nav-tab.active .nav-badge { background: rgba(42,79,170,0.12); color: var(--cyan); }
+
+    .content-wrap { flex: 1; position: relative; overflow: hidden; }
+    .tool-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; display: none; background: var(--bg); }
+    .tool-frame.active { display: block; }
+
+    .frame-loader {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      background: var(--bg); transition: opacity 0.3s; z-index: 10;
+    }
+    .frame-loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-spinner {
+      width: 28px; height: 28px; border: 2px solid var(--border2);
+      border-top-color: var(--cyan); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .loader-text { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--t3); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">Toolkit <small>ACADEMIC</small></div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="taica" onclick="switchTab('taica')">
+          🔍 TAICA 課程查詢 <span class="nav-badge">TAICA</span>
+        </button>
+        <button class="nav-tab" data-tab="multiopen" onclick="switchTab('multiopen')">
+          ⚡ NTU COOL 批量開啟 <span class="nav-badge">COOL</span>
+        </button>
+        <button class="nav-tab" data-tab="mailgen" onclick="switchTab('mailgen')">
+          ✉️ 信件生成器 <span class="nav-badge">MAIL</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content-wrap">
+    <div class="frame-loader" id="loader-taica">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">TAICA 載入中...</div>
+    </div>
+    <div class="frame-loader hidden" id="loader-multiopen">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">批量開啟工具載入中...</div>
+    </div>
+    <div class="frame-loader hidden" id="loader-mailgen">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">信件生成器載入中...</div>
+    </div>
+
+    <iframe class="tool-frame active" id="frame-taica" title="TAICA 課程查詢系統"></iframe>
+    <iframe class="tool-frame" id="frame-multiopen" title="NTU COOL 批量開啟工具"></iframe>
+    <iframe class="tool-frame" id="frame-mailgen" title="信件生成器"></iframe>
+  </div>
+
+<script>
+  var TABS = ['taica', 'multiopen', 'mailgen'];
+  var loaded = {};
+  var contents = {
+    taica: `<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <base target="_top">
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"><\/script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>TAICA查詢系統<\/title>
+
+    <style>
+        :root {
+            --bg: #e8e3d8;
+            --bg2: #f6f3ee;
+            --bg3: #ede9e0;
+            --bg4: #d5cec2;
+            --border: rgba(50, 32, 10, 0.10);
+            --border2: rgba(50, 32, 10, 0.18);
+            --t1: #1c1812;
+            --t2: #6b5e4e;
+            --t3: #a8967e;
+
+            /* indigo — primary selection / COOL (replaces cyan) */
+            --cyan: #2a4faa;
+            --cyan-dim: rgba(42, 79, 170, 0.08);
+            --cyan-glow: rgba(42, 79, 170, 0.20);
+
+            /* terracotta — host school / global links (replaces amber) */
+            --amber: #c24128;
+            --amber-dim: rgba(194, 65, 40, 0.08);
+
+            /* teal — mirror badge / copy-all (replaces purple) */
+            --purple: #1a6b74;
+            --purple-dim: rgba(26, 107, 116, 0.08);
+
+            /* olive — satellite badge / sheet (replaces green) */
+            --green: #4f7620;
+            --green-dim: rgba(79, 118, 32, 0.08);
+
+            /* error / filter indicator */
+            --red: #c24128;
+            --red-dim: rgba(194, 65, 40, 0.08);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+        }
+
+        .no-select {
+            -webkit-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        /* ── HEADER ── */
+        .hdr {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 6px rgba(50, 32, 10, 0.07);
+            flex-shrink: 0;
+            z-index: 50;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Institutional top-stripe */
+        .hdr::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1a2f6e 0%, var(--cyan) 55%, var(--purple) 100%);
+        }
+
+        .hdr-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .logo-taica {
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            font-size: 30px;
+            letter-spacing: 0.06em;
+            color: #1a2f6e;
+            line-height: 1;
+        }
+
+        .logo-sep {
+            width: 1px;
+            height: 14px;
+            background: var(--border2);
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .logo-cn {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--t2);
+            letter-spacing: 0.05em;
+        }
+
+        .hdr-search-wrap {
+            position: relative;
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .hdr-search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--t3);
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        .hdr-search {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--t1);
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 12px;
+            padding: 7px 12px 7px 30px;
+            transition: border-color .18s, box-shadow .18s;
+        }
+
+        .hdr-search::placeholder {
+            color: var(--t3);
+        }
+
+        .hdr-search:focus {
+            border-color: rgba(42, 79, 170, .4);
+            box-shadow: 0 0 0 3px rgba(42, 79, 170, .08);
+            outline: none;
+        }
+
+        /* ── LAYOUT ── */
+        .main-wrap {
+            flex: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+        }
+
+        .sidebar {
+            width: 256px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .content-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-bottom: 40px;
+        }
+
+        /* ── PANEL ── */
+        .panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(50, 32, 10, 0.05);
+        }
+
+        /* ── SECTION LABEL ── */
+        .s-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+            color: var(--t3);
+        }
+
+        /* ── TYPE FILTER ── */
+        .type-pill {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--t2);
+            cursor: pointer;
+            transition: all .14s;
+        }
+
+        .type-pill:hover {
+            border-color: var(--border2);
+            color: var(--t1);
+            background: rgba(50, 32, 10, 0.05);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(50, 32, 10, .09);
+        }
+
+        .type-pill.on {
+            background: var(--cyan-dim);
+            border-color: rgba(42, 79, 170, .30);
+            color: var(--cyan);
+            box-shadow: 0 2px 10px rgba(42, 79, 170, .16);
+        }
+
+        /* ── COURSE LIST ── */
+        .ci {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 13px;
+            border-bottom: 1px solid var(--border);
+            border-left: 2px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            transition: background .12s, border-color .12s, transform .18s cubic-bezier(.34, 1.4, .64, 1);
+        }
+
+        .ci:focus {
+            outline: none;
+        }
+
+        .ci:hover {
+            background: rgba(50, 32, 10, 0.04);
+            border-left-color: var(--t3);
+            transform: translateX(3px);
+        }
+
+        .ci.on {
+            background: var(--cyan-dim);
+            border-left-color: var(--cyan);
+            transform: translateX(0);
+        }
+
+        .ci-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--t1);
+            line-height: 1.35;
+        }
+
+        .ci.on .ci-name {
+            color: var(--cyan);
+        }
+
+        .ci-type {
+            font-size: 10px;
+            color: var(--t3);
+            margin-top: 2px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ── GEN LINKS ── */
+        .gen-a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 8px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 13px;
+            color: var(--t2);
+            transition: background .12s, color .12s, transform .18s cubic-bezier(.34, 1.4, .64, 1);
+            cursor: context-menu;
+        }
+
+        .gen-a:hover {
+            background: rgba(50, 32, 10, 0.05);
+            color: var(--amber);
+            transform: translateX(4px);
+        }
+
+        .gen-arrow {
+            margin-left: auto;
+            font-size: 8px;
+            opacity: 0;
+            transition: opacity .12s, transform .18s;
+        }
+
+        .gen-a:hover .gen-arrow {
+            opacity: .6;
+            transform: translateX(2px);
+        }
+
+        /* ── COURSE HEADER ── */
+        .course-hdr {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--amber);
+            border-radius: 8px;
+            padding: 14px 16px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 4px rgba(50, 32, 10, 0.05);
+        }
+
+        .course-tag {
+            display: inline-block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .06em;
+            color: var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid rgba(194, 65, 40, .20);
+            border-radius: 3px;
+            padding: 2px 7px;
+            margin-bottom: 6px;
+        }
+
+        .course-name-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--t1);
+            line-height: 1.3;
+            margin-bottom: 11px;
+        }
+
+        .glink-card {
+            display: flex;
+            align-items: center;
+            padding: 9px 13px;
+            background: var(--bg3);
+            border: 1px solid rgba(194, 65, 40, .18);
+            border-radius: 6px;
+            color: var(--amber);
+            text-decoration: none;
+            cursor: context-menu;
+            transition: background .16s, border-color .16s, transform .16s, box-shadow .16s;
+        }
+
+        .glink-card:hover {
+            background: var(--amber-dim);
+            border-color: rgba(194, 65, 40, .40);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(194, 65, 40, .15), 0 0 0 3px rgba(194, 65, 40, .06);
+        }
+
+        .glink-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            background: var(--amber-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            transition: background .16s;
+        }
+
+        .glink-card:hover .glink-icon {
+            background: rgba(194, 65, 40, .14);
+        }
+
+        /* ── TOOLBAR ── */
+        .view-sw {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px;
+            display: flex;
+            gap: 2px;
+            box-shadow: 0 1px 4px rgba(50, 32, 10, 0.05);
+        }
+
+        .vbtn {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--t2);
+            border: none;
+            background: transparent;
+            font-family: 'Noto Sans TC', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all .13s;
+        }
+
+        .vbtn:hover {
+            background: rgba(50, 32, 10, 0.05);
+            color: var(--t1);
+            transform: translateY(-1px);
+        }
+
+        .vbtn.vcard {
+            background: var(--cyan-dim);
+            color: var(--cyan);
+        }
+
+        .vbtn.vtable {
+            background: var(--purple-dim);
+            color: var(--purple);
+        }
+
+        /* ── BADGES ── */
+        .bdg {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .04em;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .bdg-host {
+            background: var(--amber-dim);
+            color: var(--amber);
+            border: 1px solid rgba(194, 65, 40, .25);
+        }
+
+        .bdg-mirror {
+            background: var(--purple-dim);
+            color: var(--purple);
+            border: 1px solid rgba(26, 107, 116, .25);
+        }
+
+        .bdg-sat {
+            background: var(--green-dim);
+            color: var(--green);
+            border: 1px solid rgba(79, 118, 32, .25);
+        }
+
+        /* ── SCHOOL CARDS ── */
+        .scard {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 4px rgba(50, 32, 10, 0.05);
+            transition: border-color .22s, transform .22s cubic-bezier(.34, 1.3, .64, 1), box-shadow .22s;
+        }
+
+        .scard:hover {
+            border-color: var(--border2);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(50, 32, 10, .12), 0 4px 12px rgba(50, 32, 10, .06);
+        }
+
+        .scard.is-host {
+            border-color: rgba(194, 65, 40, .22);
+            border-left: 3px solid var(--amber);
+            box-shadow: 0 1px 4px rgba(50, 32, 10, .05), -2px 0 14px rgba(194, 65, 40, .08);
+        }
+
+        .scard.is-host:hover {
+            border-color: rgba(194, 65, 40, .42);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(194, 65, 40, .14), 0 4px 12px rgba(194, 65, 40, .08), -2px 0 18px rgba(194, 65, 40, .10);
+        }
+
+        .scard-div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── LINK ITEMS ── */
+        .li {
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background .12s, color .12s, box-shadow .12s, transform .16s;
+        }
+
+        .li.la {
+            color: var(--t2);
+            cursor: context-menu;
+        }
+
+        .li.la:hover {
+            background: rgba(42, 79, 170, .07);
+            color: var(--cyan);
+            box-shadow: inset 0 0 0 1px rgba(42, 79, 170, .14);
+            transform: translateX(2px);
+        }
+
+        .li.ld {
+            color: var(--t3);
+            cursor: not-allowed;
+        }
+
+        .li-ic {
+            width: 15px;
+            text-align: center;
+            flex-shrink: 0;
+            font-size: 10px;
+            margin-right: 7px;
+        }
+
+        .li-chev {
+            margin-left: auto;
+            font-size: 9px;
+            color: var(--t3);
+        }
+
+        /* ── TABLE CTRL ── */
+        .tbl-ctrl {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 13px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .tgt-grp {
+            display: flex;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .tgt-btn {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--t2);
+            border: none;
+            background: transparent;
+            font-family: 'Noto Sans TC', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all .12s;
+        }
+
+        .tgt-btn:hover {
+            background: rgba(50, 32, 10, 0.05);
+            color: var(--t1);
+            transform: translateY(-1px);
+        }
+
+        .tgt-btn.tc {
+            background: var(--cyan-dim);
+            color: var(--cyan);
+        }
+
+        .tgt-btn.tf {
+            background: var(--amber-dim);
+            color: var(--amber);
+        }
+
+        .tgt-btn.ts {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .tgt-btn.tm {
+            background: var(--purple-dim);
+            color: var(--purple);
+        }
+
+        .copy-all-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--purple-dim);
+            color: var(--purple);
+            border: 1px solid rgba(26, 107, 116, .28);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 13px;
+            border-radius: 6px;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            transition: all .14s;
+        }
+
+        .copy-all-btn:hover {
+            background: rgba(26, 107, 116, .14);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(26, 107, 116, .22);
+        }
+
+        /* ── TABLE ── */
+        .dtbl {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .dtbl thead th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: var(--bg2);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--t3);
+            padding: 9px 11px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dtbl tbody tr {
+            border-bottom: 1px solid var(--border);
+            border-left: 2px solid transparent;
+            cursor: pointer;
+            transition: background .09s, box-shadow .14s;
+        }
+
+        .dtbl tbody tr:hover {
+            background: rgba(42, 79, 170, .04);
+            box-shadow: inset 3px 0 0 rgba(42, 79, 170, .28);
+        }
+
+        .dtbl tbody tr.tr-on {
+            background: var(--cyan-dim) !important;
+            border-left-color: var(--cyan) !important;
+        }
+
+        .dtbl tbody tr.tr-off {
+            opacity: .32;
+            cursor: not-allowed;
+        }
+
+        .dtbl tbody tr {
+            height: 46px;
+        }
+
+        .dtbl tbody td {
+            padding: 8px 11px;
+            vertical-align: middle;
+        }
+
+        .row-open {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 3px 7px;
+            color: var(--cyan);
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity .13s, background .15s, color .15s, border-color .15s;
+            text-decoration: none;
+        }
+
+        .dtbl tbody tr:hover .row-open {
+            opacity: 1;
+        }
+
+        .row-open:hover {
+            background: var(--cyan);
+            color: #fff;
+            border-color: var(--cyan);
+        }
+
+        /* ── FLOAT COPY / OPEN ── */
+        .fcopy-group {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 50;
+        }
+
+        .fcopy,
+        .fopen {
+            background: var(--bg2);
+            padding: 10px 22px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform .18s, box-shadow .18s;
+            white-space: nowrap;
+        }
+
+        .fcopy {
+            border: 1px solid rgba(42, 79, 170, .35);
+            box-shadow: 0 8px 32px rgba(42, 79, 170, .16), 0 4px 16px rgba(50, 32, 10, .10);
+            color: var(--cyan);
+        }
+
+        .fopen {
+            border: 1px solid rgba(26, 107, 116, .35);
+            box-shadow: 0 8px 32px rgba(26, 107, 116, .16), 0 4px 16px rgba(50, 32, 10, .10);
+            color: var(--purple);
+        }
+
+        .fcopy:hover {
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 16px 48px rgba(42, 79, 170, .28), 0 4px 16px rgba(50, 32, 10, .12), 0 0 0 4px rgba(42, 79, 170, .08);
+        }
+
+        .fopen:hover {
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 16px 48px rgba(26, 107, 116, .28), 0 4px 16px rgba(50, 32, 10, .12), 0 0 0 4px rgba(26, 107, 116, .08);
+        }
+
+        /* ── TOAST ── */
+        .toast-box {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            z-index: 50;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 18px;
+            box-shadow: 0 8px 32px rgba(50, 32, 10, .12);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--t1);
+        }
+
+        /* ── LOADER ── */
+        .spin-ring {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--border2);
+            border-top-color: var(--cyan);
+            animation: spn .72s linear infinite;
+        }
+
+        @keyframes spn {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── TRANSITIONS ── */
+        .toast-enter-active {
+            transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .toast-leave-active {
+            transition: all .2s ease;
+        }
+
+        .toast-enter-from,
+        .toast-leave-to {
+            opacity: 0;
+            transform: translateY(10px) scale(.94);
+        }
+
+        /* ── SCROLLBAR ── */
+        .cscroll::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .cscroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .cscroll::-webkit-scrollbar-thumb {
+            background: var(--bg4);
+            border-radius: 2px;
+        }
+
+        .cscroll::-webkit-scrollbar-thumb:hover {
+            background: var(--t3);
+        }
+
+        /* ── EMPTY / DASHED ── */
+        .empty-pane {
+            min-height: calc(100vh - 64px - 24px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px dashed var(--border2);
+            border-radius: 8px;
+            color: var(--t3);
+        }
+    <\/style>
+<\/head>
+
+<body class="flex flex-col no-select">
+    <div id="app" class="flex flex-col">
+
+        <!-- ── HEADER ── -->
+        <header class="hdr">
+            <div class="hdr-inner">
+                <div class="logo-wrap">
+                    <span class="logo-taica">TAICA<\/span>
+                    <div class="logo-sep"><\/div>
+                    <span class="logo-cn">課程連結查詢系統<\/span>
+                <\/div>
+                <div class="hdr-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass hdr-search-icon"><\/i>
+                    <input v-model="searchKeyword" type="text" placeholder="搜尋學校名稱…" class="hdr-search" @keydown.stop @focus="searchKeyword = ''">
+                <\/div>
+            <\/div>
+        <\/header>
+
+        <!-- ── LOADING ── -->
+        <div v-if="loading"
+            style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+            <div class="spin-ring"><\/div>
+            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);">載入資料中…<\/p>
+            <p v-if="useMockData" style="font-size:10px;color:var(--amber);font-family:'IBM Plex Mono',monospace;">[
+                test mode ]<\/p>
+        <\/div>
+
+        <!-- ── MAIN ── -->
+        <div v-else class="main-wrap">
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+
+                <!-- Type filter -->
+                <div class="panel" style="padding:11px;flex-shrink:0;">
+                    <span class="s-label" style="margin-bottom:7px;display:block;">課程類型<\/span>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                        <button v-for="type in courseTypes" @click="selectType(type)"
+                            :class="['type-pill', selectedType === type ? 'on' : '']">
+                            {{ type }}
+                        <\/button>
+                    <\/div>
+                <\/div>
+
+                <!-- Course list -->
+                <div class="panel" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+                    <div style="padding:9px 13px 7px;border-bottom:1px solid var(--border);flex-shrink:0;">
+                        <span class="s-label">選擇課程<\/span>
+                    <\/div>
+                    <div class="cscroll" style="overflow-y:auto;flex:1;">
+                        <div v-if="filteredCourses.length === 0"
+                            style="padding:18px;text-align:center;font-size:11px;color:var(--t3);font-family:'IBM Plex Mono',monospace;">
+                            // empty
+                        <\/div>
+                        <button v-for="course in filteredCourses" @click="selectCourse(course)"
+                            :class="['ci', selectedCourse?.id === course.id ? 'on' : '']">
+                            <div class="ci-name">{{ course.name }}<\/div>
+                            <div class="ci-type">{{ course.type }}<\/div>
+                        <\/button>
+                    <\/div>
+                <\/div>
+
+                <!-- General links -->
+                <div class="panel"
+                    style="flex-shrink:0;overflow:hidden;display:flex;flex-direction:column;max-height:32vh;">
+                    <div style="padding:8px 11px 6px;border-bottom:1px solid var(--border);flex-shrink:0;">
+                        <span class="s-label">常用資源<\/span>
+                    <\/div>
+                    <div class="cscroll" style="overflow-y:auto;flex:1;padding:5px 8px 7px;">
+                        <div style="display:flex;flex-direction:column;gap:1px;">
+                            <a v-for="link in generalLinks" :key="link.name" :href="link.url" target="_blank"
+                                @contextmenu.prevent="handleRightClickCopy(link.url)" class="gen-a" title="左鍵開啟，右鍵複製連結">
+                                <i :class="[link.icon]"
+                                    style="width:13px;text-align:center;flex-shrink:0;font-size:10px;color:var(--t3);"><\/i>
+                                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{
+                                    link.name }}<\/span>
+                                <i class="fa-solid fa-arrow-up-right-from-square gen-arrow"><\/i>
+                            <\/a>
+                        <\/div>
+                    <\/div>
+                <\/div>
+
+            <\/aside>
+
+            <!-- Content -->
+            <section class="content-col">
+
+                <!-- Bulk open actions -->
+                <div class="panel" style="padding:9px 13px;flex-shrink:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span class="s-label" style="white-space:nowrap;">批量開啟<\/span>
+                    <div style="width:1px;height:14px;background:var(--border2);"><\/div>
+                    <button @click="openAllMainCool" style="display:flex;align-items:center;gap:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(42,79,170,.22);font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .14s;">
+                        <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>所有主導課程
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allMainCoolUrls.length }}<\/span>
+                    <\/button>
+                    <button @click="openAllRosters" style="display:flex;align-items:center;gap:6px;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(194,65,40,.22);font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .14s;">
+                        <i class="fa-regular fa-folder-open" style="font-size:9px;"><\/i>所有名單總表
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allRosterUrls.length }}<\/span>
+                    <\/button>
+                <\/div>
+
+                <div v-if="!selectedCourse" class="empty-pane">
+                    <i class="fa-regular fa-hand-point-left" style="font-size:26px;"><\/i>
+                    <p style="font-size:12px;color:var(--t2);">請從左側選擇課程<\/p>
+                <\/div>
+
+                <div v-else style="display:flex;flex-direction:column;height:100%;gap:8px;">
+
+                    <!-- Course header -->
+                    <div class="course-hdr">
+                        <div class="course-tag">{{ selectedCourse.type }}<\/div>
+                        <h2 class="course-name-text">{{ selectedCourse.name }}<\/h2>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:7px;">
+                            <a v-for="link in selectedCourse.globalLinks" :href="link.url" target="_blank"
+                                @contextmenu.prevent="handleRightClickCopy(link.url)" class="glink-card"
+                                title="左鍵開啟，右鍵複製">
+                                <div class="glink-icon"><i class="fa-solid fa-star" style="font-size:11px;"><\/i><\/div>
+                                <div style="flex:1;min-width:0;">
+                                    <div
+                                        style="font-weight:700;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                        {{ link.name }}<\/div>
+                                    <div
+                                        style="font-size:9px;opacity:.5;margin-top:1px;font-family:'IBM Plex Mono',monospace;">
+                                        右鍵複製連結<\/div>
+                                <\/div>
+                                <i class="fa-solid fa-external-link-alt"
+                                    style="font-size:9px;opacity:.35;margin-left:8px;flex-shrink:0;"><\/i>
+                            <\/a>
+                        <\/div>
+                    <\/div>
+
+                    <!-- Toolbar -->
+                    <div
+                        style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:11px;font-weight:700;color:var(--t2);">各校連結<\/span>
+                            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);">({{
+                                filteredSchools.length }})<\/span>
+                            <span v-if="searchKeyword" style="font-size:10px;color:var(--red);">
+                                <i class="fa-solid fa-filter" style="font-size:9px;"><\/i> "{{ searchKeyword }}"
+                            <\/span>
+                        <\/div>
+                        <div v-if="filteredSchools.length > 0" class="view-sw">
+                            <button @click="viewMode = 'card'" :class="['vbtn', viewMode==='card' ? 'vcard' : '']">
+                                <i class="fa-solid fa-grid-2" style="font-size:10px;"><\/i>卡片
+                            <\/button>
+                            <button @click="viewMode = 'table'" :class="['vbtn', viewMode==='table' ? 'vtable' : '']">
+                                <i class="fa-solid fa-table-list" style="font-size:10px;"><\/i>批量複製
+                            <\/button>
+                        <\/div>
+                    <\/div>
+
+                    <!-- Data area -->
+                    <div
+                        style="flex:1;overflow:clip;background:var(--bg2);border-radius:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(50,32,10,0.05);">
+
+                        <div v-if="filteredSchools.length === 0"
+                            style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3);">
+                            <i class="fa-solid fa-inbox" style="font-size:22px;"><\/i>
+                            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;">// no results<\/p>
+                        <\/div>
+
+                        <!-- Card view -->
+                        <div v-else-if="viewMode === 'card'"
+                            style="padding:12px;">
+                            <div
+                                style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;">
+                                <template v-for="(item, idx) in filteredSchools" :key="item.school">
+                                    <!-- Group header for twoStep -->
+                                    <div v-if="selectedCourse?.twoStep && (idx === 0 || item.role !== filteredSchools[idx-1].role)"
+                                        :style="'grid-column:1/-1;border-radius:7px;padding:9px 14px;display:flex;align-items:center;gap:10px;' + (idx > 0 ? 'margin-top:6px;' : '') + (item.role==='清大組' ? 'background:var(--purple-dim);border:1px solid rgba(26,107,116,.22);' : 'background:var(--green-dim);border:1px solid rgba(79,118,32,.22);')">
+                                        <span style="font-size:13px;font-weight:700;white-space:nowrap;" :style="item.role==='清大組'?'color:var(--purple)':'color:var(--green)'">{{ item.role }}<\/span>
+                                        <span style="font-size:11px;color:var(--t2);">{{ item.role === '清大組' ? '以學生身分加入清大課程頁面，以旁聽生身分加入主導課程' : '以學生身分加入本校衛星課程頁面，以旁聽生身分加入主導課程' }}<\/span>
+                                    <\/div>
+                                    <div :class="['scard', item.isHost ? 'is-host' : '']">
+                                        <div class="scard-div">
+                                            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                                <span style="font-size:12px;font-weight:700;color:var(--t1);">{{ item.school }}<\/span>
+                                                <span v-if="item.isHost" class="bdg bdg-host">
+                                                    <i class="fa-solid fa-crown" style="font-size:8px;"><\/i>開課
+                                                <\/span>
+                                            <\/div>
+                                            <span :class="['bdg', (item.role==='鏡像'||item.role==='清大組') ? 'bdg-mirror' : 'bdg-sat']">{{ item.role }}<\/span>
+                                        <\/div>
+                                        <div style="display:flex;flex-direction:column;gap:2px;">
+                                            <a v-for="link in item.links.filter(l => l.type !== 'cool_main')"
+                                                :href="link.disabled ? null : link.url"
+                                                :class="['li', link.disabled ? 'ld' : 'la']"
+                                                :target="link.disabled ? null : '_blank'"
+                                                @click="link.disabled && $event.preventDefault()"
+                                                @contextmenu.prevent="!link.disabled && handleRightClickCopy(link.url)"
+                                                :title="link.disabled ? '無效連結' : '左鍵開啟，右鍵複製'">
+                                                <i v-if="link.type==='folder'" class="fa-regular fa-folder-open li-ic"
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--amber)'"><\/i>
+                                                <i v-else-if="link.type==='sheet'" class="fa-solid fa-table li-ic"
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--green)'"><\/i>
+                                                <i v-else-if="link.type==='cool'" class="fa-solid fa-graduation-cap li-ic"
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"><\/i>
+                                                <i v-else-if="link.type==='cool_student'" class="fa-solid fa-graduation-cap li-ic"
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"><\/i>
+                                                <i v-else class="fa-solid fa-link li-ic" style="color:var(--t3);"><\/i>
+                                                <span
+                                                    style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{
+                                                    link.label }}<\/span>
+                                                <i v-if="!link.disabled" class="fa-solid fa-chevron-right li-chev"><\/i>
+                                            <\/a>
+                                        <\/div>
+                                    <\/div>
+                                <\/template>
+                            <\/div>
+                        <\/div>
+
+                        <!-- Table view -->
+                        <div v-else style="display:flex;flex-direction:column;">
+                            <div class="tbl-ctrl" style="flex-direction:column;align-items:stretch;gap:0;">
+                                <!-- 第一列：TARGET + PAGE + 複製按鈕 -->
+                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;">TARGET<\/span>
+                                    <div class="tgt-grp">
+                                        <template v-if="selectedCourse?.twoStep">
+                                            <button @click="setTableTarget('cool_student')" :class="['tgt-btn', tableTarget==='cool_student'?'tc':'']">
+                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>課程頁面
+                                            <\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                        <\/template>
+                                        <template v-else-if="selectedCourse?.type !== '鏡像課程'">
+                                            <button @click="setTableTarget('cool')" :class="['tgt-btn', tableTarget==='cool'?'tc':'']">
+                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>COOL
+                                            <\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                        <\/template>
+                                        <button @click="setTableTarget('folder')" :class="['tgt-btn', tableTarget==='folder'?'tf':'']">
+                                            <i class="fa-regular fa-folder-open" style="font-size:9px;"><\/i>資料夾
+                                        <\/button>
+                                        <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                        <button @click="setTableTarget('sheet')" :class="['tgt-btn', tableTarget==='sheet'?'ts':'']">
+                                            <i class="fa-solid fa-table" style="font-size:9px;"><\/i>分頁
+                                        <\/button>
+                                    <\/div>
+                                    <template v-if="tableTarget === 'cool' || tableTarget === 'cool_main' || tableTarget === 'cool_student'">
+                                        <div style="width:1px;height:18px;background:var(--border2);flex-shrink:0;"><\/div>
+                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">PAGE<\/span>
+                                        <div class="tgt-grp">
+                                            <button @click="coolSuffix = ''" :class="['tgt-btn', coolSuffix===''?'tc':'']"><i class="fa-solid fa-house" style="font-size:9px;"><\/i>首頁<\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <button @click="coolSuffix = '/users'" :class="['tgt-btn', coolSuffix==='/users'?'tc':'']"><i class="fa-solid fa-users" style="font-size:9px;"><\/i>成員<\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <button @click="coolSuffix = '/assignments'" :class="['tgt-btn', coolSuffix==='/assignments'?'tc':'']"><i class="fa-solid fa-clipboard-list" style="font-size:9px;"><\/i>作業<\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <button @click="coolSuffix = '/settings'" :class="['tgt-btn', coolSuffix==='/settings'?'tc':'']"><i class="fa-solid fa-gear" style="font-size:9px;"><\/i>設定<\/button>
+                                        <\/div>
+                                    <\/template>
+                                    <div style="flex:1;"><\/div>
+                                    <div :style="consolidatedUrl ? 'visibility:hidden;pointer-events:none' : ''" style="display:flex;align-items:center;gap:8px;">
+                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);">drag · shift · ctrl+c<\/span>
+                                        <span v-if="tableSelection.size > 0" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;background:var(--cyan-dim);padding:3px 9px;border-radius:4px;border:1px solid rgba(42,79,170,.28);color:var(--cyan);">{{ tableSelection.size }} selected<\/span>
+                                        <button @click="copyAllLinks" class="copy-all-btn">
+                                            <i class="fa-regular fa-copy"><\/i>全部複製 ({{ filteredSchools.length }})
+                                        <\/button>
+                                    <\/div>
+                                <\/div>
+                                <!-- 第二列：ROLE（獨立一行，避免換行跳動）-->
+                                <div v-if="selectedCourse?.type === '混合課程' || selectedCourse?.twoStep"
+                                    style="display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);margin-top:7px;padding-top:7px;">
+                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">ROLE<\/span>
+                                    <div class="tgt-grp">
+                                        <button @click="setRoleFilter('全部')" :class="['tgt-btn', roleFilter==='全部'?'tc':'']">全部<\/button>
+                                        <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                        <template v-if="selectedCourse?.twoStep">
+                                            <button @click="setRoleFilter('清大組')" :class="['tgt-btn', roleFilter==='清大組'?'tm':'']">
+                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"><\/i>清大組
+                                            <\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <button @click="setRoleFilter('各校組')" :class="['tgt-btn', roleFilter==='各校組'?'ts':'']">
+                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"><\/i>各校組
+                                            <\/button>
+                                        <\/template>
+                                        <template v-else>
+                                            <button @click="setRoleFilter('鏡像')" :class="['tgt-btn', roleFilter==='鏡像'?'tm':'']">
+                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"><\/i>鏡像
+                                            <\/button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <button @click="setRoleFilter('衛星')" :class="['tgt-btn', roleFilter==='衛星'?'ts':'']">
+                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"><\/i>衛星
+                                            <\/button>
+                                        <\/template>
+                                    <\/div>
+                                <\/div>
+                            <\/div>
+
+                            <!-- 合併檢視：所有學校共用同一連結時顯示 -->
+                            <div v-if="consolidatedUrl" style="padding:22px 24px;display:flex;flex-direction:column;gap:14px;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <i class="fa-solid fa-graduation-cap" style="color:var(--cyan);font-size:13px;"><\/i>
+                                    <span style="font-weight:700;font-size:13px;color:var(--t1);">{{ filteredSchools.length }} 所學校共用同一課程頁面連結<\/span>
+                                <\/div>
+                                <a :href="consolidatedUrl" target="_blank" @dblclick.prevent="() => window.open(consolidatedUrl, '_blank')" @contextmenu.prevent="handleRightClickCopy(consolidatedUrl)" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(42,79,170,.18);padding:10px 14px;border-radius:6px;word-break:break-all;display:block;text-decoration:none;cursor:pointer;" title="單擊開啟，右鍵複製">{{ consolidatedUrl }}<\/a>
+                                <button @click="copyToClipboard(consolidatedUrl, 1, true)" style="align-self:flex-start;display:flex;align-items:center;gap:7px;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(42,79,170,.28);font-size:12px;font-weight:600;padding:7px 16px;border-radius:6px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;">
+                                    <i class="fa-regular fa-copy"><\/i>複製連結
+                                <\/button>
+                                <div style="border-top:1px solid var(--border);padding-top:12px;">
+                                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:7px;letter-spacing:.08em;">SCHOOLS<\/div>
+                                    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                                        <span v-for="item in filteredSchools" :key="item.school" style="font-size:11px;padding:3px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--t2);">{{ item.school }}<\/span>
+                                    <\/div>
+                                <\/div>
+                            <\/div>
+
+                            <!-- 一般表格 -->
+                            <div v-else ref="tableContainer" class="cscroll" style="overflow:auto;max-height:70vh;">
+                                <table class="dtbl">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:42px;text-align:center;">
+                                                <input type="checkbox" :checked="allSelected"
+                                                    :indeterminate.prop="someSelected" @change="toggleSelectAll"
+                                                    @mousedown.stop
+                                                    style="cursor:pointer;accent-color:var(--cyan);width:13px;height:13px;vertical-align:middle;">
+                                            <\/th>
+                                            <th style="width:32%;">學校<\/th>
+                                            <th>
+                                                <span v-if="tableTarget==='cool'"><i class="fa-solid fa-graduation-cap"
+                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"><\/i>COOL<\/span>
+                                                <span v-else-if="tableTarget==='cool_main'"><i class="fa-solid fa-graduation-cap"
+                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"><\/i>主導課程（旁聽生）<\/span>
+                                                <span v-else-if="tableTarget==='cool_student'"><i class="fa-solid fa-graduation-cap"
+                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"><\/i>課程頁面（學生）<\/span>
+                                                <span v-else-if="tableTarget==='folder'"><i
+                                                        class="fa-regular fa-folder-open"
+                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"><\/i>資料夾<\/span>
+                                                <span v-else><i class="fa-solid fa-table"
+                                                        style="color:var(--green);margin-right:4px;font-size:9px;"><\/i>分頁<\/span>
+                                                <span style="color:var(--t3);">/ url<\/span>
+                                            <\/th>
+                                        <\/tr>
+                                    <\/thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in filteredSchools" :key="item.school"
+                                            :data-idx="index"
+                                            @mousedown="handleMouseDown(index, $event, item)"
+                                            @mouseenter="handleMouseEnter(index, item)"
+                                            @dblclick.stop="openSingleRow(item)"
+                                            :class="[isRowSelected(index)?'tr-on':'', getTargetLink(item)?.disabled?'tr-off':'']">
+                                            <td
+                                                style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);">
+                                                {{ index+1 }}<\/td>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+                                                    <span style="font-weight:600;font-size:12px;"
+                                                        :style="isRowSelected(index)?'color:var(--cyan)':'color:var(--t1)'">{{
+                                                        item.school }}<\/span>
+                                                    <span v-if="item.isHost" class="bdg bdg-host">開課<\/span>
+                                                    <span :class="['bdg', (item.role==='鏡像'||item.role==='清大組')?'bdg-mirror':'bdg-sat']">{{
+                                                        item.role }}<\/span>
+                                                <\/div>
+                                            <\/td>
+                                            <td style="position:relative;" class="group">
+                                                <template v-if="getTargetLink(item)">
+                                                    <span
+                                                        style="font-family:'IBM Plex Mono',monospace;font-size:10px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px;"
+                                                        :style="isRowSelected(index)?'color:var(--cyan)':'color:var(--t3)'">
+                                                        {{ getTargetLink(item).disabled ? '— 無有效連結 —' :
+                                                        getTargetLink(item).url + (['cool','cool_main','cool_student'].includes(tableTarget) ? coolSuffix : '') }}
+                                                    <\/span>
+                                                    <a v-if="!getTargetLink(item).disabled"
+                                                        :href="getTargetLink(item).url + (['cool','cool_main','cool_student'].includes(tableTarget) ? coolSuffix : '')" target="_blank" class="row-open"
+                                                        title="在新分頁開啟" @mousedown.stop>
+                                                        <i class="fa-solid fa-external-link-alt"><\/i>
+                                                    <\/a>
+                                                <\/template>
+                                                <span v-else
+                                                    style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);display:block;">—<\/span>
+                                            <\/td>
+                                        <\/tr>
+                                    <\/tbody>
+                                <\/table>
+                            <\/div>
+                        <\/div>
+
+                    <\/div>
+                <\/div>
+            <\/section>
+
+        <\/div><!-- /main-wrap -->
+
+        <!-- Float copy / open -->
+        <transition name="toast">
+            <div v-if="viewMode==='table' && tableSelection.size > 0" class="fcopy-group">
+                <div class="fcopy" @click="copyTableSelection">
+                    <i class="fa-regular fa-copy" style="font-size:13px;"><\/i>
+                    <span style="font-weight:700;font-size:13px;">複製 {{ tableSelection.size }} 個{{ targetLabel }}<\/span>
+                <\/div>
+                <div class="fopen" @click="openTableSelection">
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:13px;"><\/i>
+                    <span style="font-weight:700;font-size:13px;">開啟 {{ tableSelection.size }} 個分頁<\/span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--purple-dim);border:1px solid rgba(26,107,116,.28);padding:2px 9px;border-radius:20px;">ctrl+↵<\/span>
+                <\/div>
+            <\/div>
+        <\/transition>
+
+        <!-- Toast -->
+        <transition name="toast">
+            <div v-if="showToast" class="toast-box">
+                <i class="fa-solid fa-circle-check" style="color:var(--green);font-size:13px;"><\/i>
+                <span>{{ toastMessage }}<\/span>
+            <\/div>
+        <\/transition>
+
+    <\/div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, onUnmounted, reactive } = Vue;
+
+        // 混合課程卡片模式學校顯示順序
+        const SCHOOL_ORDER = [
+            '國立政治大學', '國立清華大學', '國立臺灣大學', '國立臺灣師範大學', '國立成功大學',
+            '國立中興大學', '國立陽明交通大學', '國立中央大學', '國立中山大學', '國立臺灣海洋大學',
+            '國立中正大學', '國立高雄師範大學', '國立彰化師範大學', '國立臺北大學', '國立嘉義大學',
+            '國立高雄大學', '國立東華大學', '國立臺灣科技大學', '國立雲林科技大學', '國立臺北科技大學',
+            '國立宜蘭大學', '國立聯合大學', '國立虎尾科技大學', '國立臺南大學', '國立勤益科技大學',
+            '國立金門大學', '國立臺中科技大學', '國立高雄科技大學', '國立空中大學', '東海大學',
+            '輔仁大學', '東吳大學', '中原大學', '淡江大學', '逢甲大學', '靜宜大學', '長庚大學',
+            '元智大學', '銘傳大學', '實踐大學', '朝陽科技大學', '高雄醫學大學', '大同大學',
+            '南臺科技大學', '崑山科技大學', '慈濟大學', '臺北醫學大學', '龍華科技大學', '長榮大學',
+            '中國醫藥大學', '正修科技大學', '明志科技大學', '亞洲大學', '開南大學', '致理科技大學'
+        ];
+        const schoolOrderIndex = (name) => {
+            const n = name.replace(/台/g, '臺');
+            const i = SCHOOL_ORDER.findIndex(s => s === n);
+            return i === -1 ? SCHOOL_ORDER.length : i;
+        };
+
+        createApp({
+            setup() {
+                const loading = ref(true);
+                const useMockData = ref(false);
+                const allData = ref([]);
+                const courseTypes = ['全部', '鏡像課程', '衛星課程', '混合課程'];
+                const selectedType = ref('全部');
+                const selectedCourse = ref(null);
+                const searchKeyword = ref('');
+                const viewMode = ref('card');
+
+                // 常用資源連結 (從後端「常用資源」工作表載入，以下為預設值)
+                const generalLinks = ref([
+                    { name: '教師/助教/承辦聯繫資訊', url: 'https://docs.google.com/spreadsheets/d/1A3ap2U9vvHZlQSUpfmp3WcIf6m-BTc54NOxTBkD9jwo/edit?gid=676285020#gid=676285020', icon: 'fa-solid fa-address-book', color: 'text-green-600' },
+                    { name: '信件生成工具', url: 'https://yucecil.github.io/mail-generate/mailgenerate.html', icon: 'fa-solid fa-envelope-open-text', color: 'text-red-500' },
+                    { name: '多開工具', url: 'https://yucecil.github.io/ntu-cool-mutiopen/%E5%A4%9A%E9%96%8B%E7%B6%B2%E9%A0%81.html', icon: 'fa-solid fa-rocket', color: 'text-purple-600' },
+                    { name: '修課人數統計', url: 'https://docs.google.com/spreadsheets/d/1s0Oh-y-Pqaij1wFLktqm6DdggoRvXSx-Wnde5l_Ie7E/edit?usp=drive_link', icon: 'fa-solid fa-chart-simple', color: 'text-emerald-600' },
+                    { name: '混合鏡像人數統計', url: 'https://docs.google.com/spreadsheets/d/1mqKe4PRdBZtojd2iTmvG1Ydrnwd8vwOtX2_R5zQwI8s/edit?usp=drive_link', icon: 'fa-solid fa-chart-pie', color: 'text-teal-600' },
+                    { name: '加退選SOP', url: 'https://docs.google.com/document/d/1gGFJMbTWzdWOatxJTOfNnqZ9GndO5AXL2wMm8nIqyZA/edit?tab=t.0#heading=h.eu619a7iml75', icon: 'fa-solid fa-clipboard-list', color: 'text-blue-700' },
+                    { name: '新手村', url: 'https://cool.ntu.edu.tw/courses/58787', icon: 'fa-solid fa-gamepad', color: 'text-blue-500' },
+                    { name: '生成式 AI 的人文導論_交流課程', url: 'https://cool.ntu.edu.tw/courses/58791', icon: 'fa-solid fa-comments', color: 'text-indigo-500' },
+                    { name: '人工智慧倫理_交流課程', url: 'https://cool.ntu.edu.tw/courses/58792', icon: 'fa-solid fa-comments', color: 'text-indigo-500' },
+                    { name: '機器導航與探索_交流課程', url: 'https://cool.ntu.edu.tw/courses/58793', icon: 'fa-solid fa-comments', color: 'text-indigo-500' }
+                ]);
+
+                const tableContainer = ref(null);
+                const tableSelection = reactive(new Set());
+                const isDragging = ref(false);
+                const dragStartIndex = ref(-1);
+                const selectionAnchor = ref(-1);
+                const snapshotSelection = ref(new Set());
+                const isCtrlDrag = ref(false);
+                const currentScrollSpeed = ref(0);
+                const tableTarget = ref('cool');
+                const roleFilter = ref('全部');
+                const coolSuffix = ref('');
+
+                let autoScrollInterval = null;
+                const showToast = ref(false);
+                const toastMessage = ref('');
+
+                const showToastMsg = (msg) => {
+                    toastMessage.value = msg;
+                    showToast.value = true;
+                    setTimeout(() => { showToast.value = false; }, 3000);
+                };
+
+                // ↓ 填入 GAS 部署網址（重新部署後更新此處）
+                const GAS_URL = 'https://script.google.com/macros/s/AKfycbxvSw5VLnKAGcUe3-WNTualJ8kx27HltkhIwJvuktNkE92DG-ZA1iaTZtiL2e7pWnts/exec';
+
+                const SCACHE_KEY = 'taica_v1';
+
+                const applyData = (parsed) => {
+                    allData.value = parsed.courses;
+                    if (parsed.generalLinks && parsed.generalLinks.length > 0) {
+                        generalLinks.value = parsed.generalLinks;
+                    }
+                    loading.value = false;
+                };
+
+                const fetchData = () => {
+                    // 1. 先查 sessionStorage — 命中時資料瞬間顯示，跳過 GAS 呼叫
+                    try {
+                        const cached = sessionStorage.getItem(SCACHE_KEY);
+                        if (cached) {
+                            applyData(JSON.parse(cached));
+                            return;
+                        }
+                    } catch (e) {
+                        sessionStorage.removeItem(SCACHE_KEY);
+                    }
+
+                    // 2. 尚未設定 GAS URL → 切換測試模式
+                    if (!GAS_URL || GAS_URL === 'YOUR_GAS_DEPLOY_URL') {
+                        console.warn('GAS URL 未設定，載入測試資料。');
+                        useMockData.value = true;
+                        loadMockData();
+                        return;
+                    }
+
+                    // 3. 呼叫 GAS API
+                    fetch(GAS_URL)
+                        .then(r => r.text())
+                        .then(text => {
+                            try { sessionStorage.setItem(SCACHE_KEY, text); } catch (e) { }
+                            applyData(JSON.parse(text));
+                        })
+                        .catch(error => {
+                            console.error('API 呼叫失敗，載入測試資料：', error);
+                            alert('讀取資料失敗，將切換至測試模式: ' + error);
+                            useMockData.value = true;
+                            loadMockData();
+                        });
+                };
+
+                const loadMockData = () => {
+                    setTimeout(() => {
+                        allData.value = [
+                            {
+                                id: "mock1", type: "鏡像課程", name: "智慧製造執行系統",
+                                globalLinks: [{ name: "名單總表", url: "https://docs.google.com/spreadsheets/example" }],
+                                schools: [
+                                    { school: "國立成功大學", isHost: true, role: "鏡像", links: [{ type: "folder", url: "#folder1", label: "Folder" }, { type: "cool", url: "https://cool.ntu.edu.tw/courses/mock1", label: "COOL" }, { type: "sheet", url: "#sheet1", label: "Sheet" }] },
+                                    { school: "龍華科技大學", isHost: false, role: "鏡像", links: [{ type: "cool", url: "https://cool.ntu.edu.tw/courses/mock2", label: "COOL" }, { type: "folder", url: "#folder2", label: "Folder" }] },
+                                    { school: "長榮大學", isHost: false, role: "鏡像", links: [{ type: "cool", url: "https://cool.ntu.edu.tw/courses/mock3", label: "COOL" }] }
+                                ]
+                            },
+                            {
+                                id: "mock2", type: "衛星課程", name: "人工智慧倫理",
+                                globalLinks: [{ name: "名單總表", url: "https://docs.google.com/spreadsheets/example2" }],
+                                schools: [
+                                    { school: "東海大學", isHost: true, role: "衛星", links: [{ type: "cool", url: "#", label: "COOL", disabled: true }, { type: "folder", url: "#folderA", label: "Folder" }] },
+                                    { school: "國立臺灣大學", isHost: false, role: "衛星", links: [{ type: "cool", url: "#", label: "COOL", disabled: true }] },
+                                    { school: "靜宜大學", isHost: false, role: "衛星", links: [{ type: "cool", url: "https://cool.ntu.edu.tw/courses/mock6", label: "COOL" }] }
+                                ]
+                            }
+                        ];
+                        loading.value = false;
+                    }, 800);
+                };
+
+                const allMainCoolUrls = computed(() =>
+                    filteredCourses.value
+                        .flatMap(c => c.globalLinks || [])
+                        .filter(l => l.url && (l.url.includes('cool.ntu.edu.tw') || (l.name && l.name.includes('主導'))))
+                        .map(l => l.url)
+                );
+
+                const allRosterUrls = computed(() =>
+                    filteredCourses.value
+                        .flatMap(c => c.globalLinks || [])
+                        .filter(l => l.url && !l.url.includes('cool.ntu.edu.tw') && !(l.name && l.name.includes('主導')))
+                        .map(l => l.url)
+                );
+
+                const openAllMainCool = () => {
+                    if (allMainCoolUrls.value.length === 0) { showToastMsg('沒有可開啟的連結'); return; }
+                    if (allMainCoolUrls.value.length > 10 && !confirm(\`將開啟 \${allMainCoolUrls.value.length} 個分頁，確定繼續？\`)) return;
+                    allMainCoolUrls.value.forEach((url, i) => setTimeout(() => window.open(url, '_blank'), i * 300));
+                    showToastMsg(\`已開啟 \${allMainCoolUrls.value.length} 個主導課程分頁\`);
+                };
+
+                const openAllRosters = () => {
+                    if (allRosterUrls.value.length === 0) { showToastMsg('沒有可開啟的連結'); return; }
+                    if (allRosterUrls.value.length > 10 && !confirm(\`將開啟 \${allRosterUrls.value.length} 個分頁，確定繼續？\`)) return;
+                    allRosterUrls.value.forEach((url, i) => setTimeout(() => window.open(url, '_blank'), i * 300));
+                    showToastMsg(\`已開啟 \${allRosterUrls.value.length} 個名單總表分頁\`);
+                };
+
+                const filteredCourses = computed(() => {
+                    if (selectedType.value === '全部') return allData.value;
+                    return allData.value.filter(c => c.type === selectedType.value);
+                });
+
+                const filteredSchools = computed(() => {
+                    if (!selectedCourse.value) return [];
+                    let schools = selectedCourse.value.schools;
+                    if (searchKeyword.value.trim() !== '') {
+                        const normalize = (str) => str.replace(/台/g, '臺').toLowerCase();
+                        const keyword = normalize(searchKeyword.value);
+                        schools = schools.filter(s => normalize(s.school).includes(keyword));
+                    }
+                    if (viewMode.value === 'table' && (selectedCourse.value.type === '混合課程' || selectedCourse.value.twoStep) && roleFilter.value !== '全部') {
+                        schools = schools.filter(s => s.role === roleFilter.value);
+                    }
+                    // 混合課程卡片模式依指定順序排列
+                    if (viewMode.value === 'card' && selectedCourse.value.type === '混合課程') {
+                        schools = [...schools].sort((a, b) => schoolOrderIndex(a.school) - schoolOrderIndex(b.school));
+                    }
+                    return schools;
+                });
+
+                const getTargetLink = (item) => item.links.find(l => l.type === tableTarget.value);
+
+                const getEffectiveUrl = (item) => {
+                    const link = getTargetLink(item);
+                    if (!link || link.disabled) return null;
+                    const isCool = ['cool', 'cool_main', 'cool_student'].includes(tableTarget.value);
+                    return link.url + (isCool ? coolSuffix.value : '');
+                };
+
+                // 偵測所有可見學校是否共用同一連結（用於合併檢視）
+                const consolidatedUrl = computed(() => {
+                    if (!selectedCourse.value?.twoStep) return null;
+                    if (tableTarget.value !== 'cool_student') return null;
+                    const urls = filteredSchools.value
+                        .map(item => getEffectiveUrl(item))
+                        .filter(u => u !== null);
+                    if (urls.length === 0) return null;
+                    return urls.every(u => u === urls[0]) ? urls[0] : null;
+                });
+
+                const targetLabel = computed(() => {
+                    if (tableTarget.value === 'cool') return 'COOL';
+                    if (tableTarget.value === 'cool_main') return '主導課程';
+                    if (tableTarget.value === 'cool_student') return '課程頁面';
+                    if (tableTarget.value === 'folder') return '資料夾';
+                    if (tableTarget.value === 'sheet') return '分頁';
+                    return '';
+                });
+
+                const selectType = (type) => {
+                    selectedType.value = type;
+                    selectedCourse.value = null;
+                    viewMode.value = 'card';
+                    tableSelection.clear();
+                    roleFilter.value = '全部';
+                };
+
+                const selectCourse = (course) => {
+                    selectedCourse.value = course;
+                    viewMode.value = 'card';
+                    tableSelection.clear();
+                    tableTarget.value = course.twoStep ? 'cool_student' : course.type === '鏡像課程' ? 'folder' : 'cool';
+                    roleFilter.value = '全部';
+                    coolSuffix.value = '';
+                };
+
+                const setTableTarget = (target) => {
+                    tableTarget.value = target;
+                    tableSelection.clear();
+                    coolSuffix.value = '';
+                };
+
+                const setRoleFilter = (role) => {
+                    roleFilter.value = role;
+                    tableSelection.clear();
+                };
+
+                const allSelectableIndices = computed(() =>
+                    filteredSchools.value
+                        .map((item, i) => isRowSelectable(item) ? i : -1)
+                        .filter(i => i !== -1)
+                );
+                const allSelected = computed(() => {
+                    const sel = allSelectableIndices.value;
+                    return sel.length > 0 && sel.every(i => tableSelection.has(i));
+                });
+                const someSelected = computed(() =>
+                    tableSelection.size > 0 && !allSelected.value
+                );
+                const toggleSelectAll = () => {
+                    if (allSelected.value) {
+                        tableSelection.clear();
+                    } else {
+                        allSelectableIndices.value.forEach(i => tableSelection.add(i));
+                    }
+                    selectionAnchor.value = -1;
+                };
+
+                const handleRightClickCopy = async (url) => {
+                    if (!url || url === '#' || url === '') return;
+                    await copyToClipboard(url, 1, true);
+                };
+
+                const isRowSelectable = (item) => {
+                    const link = getTargetLink(item);
+                    return link && !link.disabled;
+                };
+
+                const isRowSelected = (index) => tableSelection.has(index);
+
+                const handleMouseDown = (index, event, item) => {
+                    if (!isRowSelectable(item)) return;
+                    if (event.shiftKey) {
+                        event.preventDefault();
+                        const start = selectionAnchor.value === -1 ? index : selectionAnchor.value;
+                        tableSelection.clear();
+                        const [min, max] = [Math.min(start, index), Math.max(start, index)];
+                        for (let i = min; i <= max; i++) {
+                            if (isRowSelectable(filteredSchools.value[i])) tableSelection.add(i);
+                        }
+                        return;
+                    }
+                    isDragging.value = true;
+                    dragStartIndex.value = index;
+                    if (event.ctrlKey || event.metaKey) {
+                        isCtrlDrag.value = true;
+                        selectionAnchor.value = index;
+                        if (tableSelection.has(index)) tableSelection.delete(index);
+                        else tableSelection.add(index);
+                        snapshotSelection.value = new Set(tableSelection);
+                        snapshotSelection.value.add(index);
+                    } else {
+                        isCtrlDrag.value = false;
+                        selectionAnchor.value = index;
+                        tableSelection.clear();
+                        tableSelection.add(index);
+                        snapshotSelection.value = new Set();
+                    }
+                };
+
+                const handleMouseEnter = (index, item) => {
+                    if (!isDragging.value) return;
+                    const [min, max] = [Math.min(dragStartIndex.value, index), Math.max(dragStartIndex.value, index)];
+                    if (isCtrlDrag.value) {
+                        tableSelection.clear();
+                        snapshotSelection.value.forEach(i => tableSelection.add(i));
+                        for (let i = min; i <= max; i++) {
+                            if (isRowSelectable(filteredSchools.value[i])) tableSelection.add(i);
+                        }
+                    } else {
+                        tableSelection.clear();
+                        for (let i = min; i <= max; i++) {
+                            if (isRowSelectable(filteredSchools.value[i])) tableSelection.add(i);
+                        }
+                    }
+                };
+
+                let lastMouseX = 0, lastMouseY = 0;
+                const onGlobalMouseMove = (e) => {
+                    if (!isDragging.value || !tableContainer.value) return;
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    const { top, bottom } = tableContainer.value.getBoundingClientRect();
+                    const threshold = 50, maxSpeed = 30;
+                    let speed = 0;
+                    if (e.clientY < top + threshold) speed = -maxSpeed * ((top + threshold - e.clientY) / threshold);
+                    else if (e.clientY > bottom - threshold) speed = maxSpeed * ((e.clientY - (bottom - threshold)) / threshold);
+                    currentScrollSpeed.value = speed;
+                    if (speed !== 0) {
+                        if (!autoScrollInterval) autoScrollInterval = setInterval(() => {
+                            if (!tableContainer.value) return;
+                            tableContainer.value.scrollTop += currentScrollSpeed.value;
+                            const el = document.elementFromPoint(lastMouseX, lastMouseY);
+                            const tr = el?.closest('tr[data-idx]');
+                            if (tr) {
+                                const idx = parseInt(tr.dataset.idx);
+                                const item = filteredSchools.value[idx];
+                                if (item !== undefined) handleMouseEnter(idx, item);
+                            }
+                        }, 16);
+                    } else {
+                        if (autoScrollInterval) { clearInterval(autoScrollInterval); autoScrollInterval = null; }
+                    }
+                };
+
+                const endDrag = () => {
+                    isDragging.value = false;
+                    currentScrollSpeed.value = 0;
+                    snapshotSelection.value = new Set();
+                    isCtrlDrag.value = false;
+                    if (autoScrollInterval) { clearInterval(autoScrollInterval); autoScrollInterval = null; }
+                };
+
+                const copyToClipboard = async (text, count, isSingle = false) => {
+                    if (!text) return;
+                    const msg = isSingle ? '網址已複製！' : \`已複製 \${count} 個\${targetLabel.value}連結！\`;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        showToastMsg(msg);
+                    } catch (err) {
+                        const ta = document.createElement('textarea');
+                        ta.value = text;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        showToastMsg(msg);
+                    }
+                };
+
+                const copyTableSelection = () => {
+                    const links = Array.from(tableSelection).sort((a, b) => a - b)
+                        .map(i => getEffectiveUrl(filteredSchools.value[i]))
+                        .filter(u => u !== null);
+                    if (links.length === 0) return;
+                    copyToClipboard(links.join('\\n'), links.length);
+                };
+
+                const openSingleRow = (item) => {
+                    const url = getEffectiveUrl(item);
+                    if (url) window.open(url, '_blank');
+                };
+
+                const openTableSelection = () => {
+                    const links = Array.from(tableSelection).sort((a, b) => a - b)
+                        .map(i => getEffectiveUrl(filteredSchools.value[i]))
+                        .filter(u => u !== null);
+                    if (links.length === 0) { showToastMsg('沒有可開啟的連結'); return; }
+                    links.forEach((url, idx) => setTimeout(() => window.open(url, '_blank'), idx * 300));
+                    showToastMsg(\`已開啟 \${links.length} 個分頁\`);
+                };
+
+                const copyAllLinks = () => {
+                    const links = filteredSchools.value.map(item => getEffectiveUrl(item)).filter(u => u !== null);
+                    if (links.length === 0) { showToastMsg('沒有可複製的連結'); return; }
+                    copyToClipboard(links.join('\\n'), links.length);
+                };
+
+                const handleKeydown = (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+                        if (viewMode.value === 'table' && tableSelection.size > 0) {
+                            e.preventDefault();
+                            copyTableSelection();
+                        }
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        if (viewMode.value === 'table' && tableSelection.size > 0) {
+                            e.preventDefault();
+                            openTableSelection();
+                        }
+                    }
+                };
+
+                onMounted(() => {
+                    fetchData();
+                    window.addEventListener('mouseup', endDrag);
+                    window.addEventListener('mousemove', onGlobalMouseMove);
+                    window.addEventListener('keydown', handleKeydown);
+                });
+
+                onUnmounted(() => {
+                    window.removeEventListener('mouseup', endDrag);
+                    window.removeEventListener('mousemove', onGlobalMouseMove);
+                    window.removeEventListener('keydown', handleKeydown);
+                    if (autoScrollInterval) clearInterval(autoScrollInterval);
+                });
+
+                return {
+                    loading, useMockData, courseTypes, selectedType, filteredCourses,
+                    selectedCourse, searchKeyword, filteredSchools, viewMode, tableSelection,
+                    tableContainer, handleMouseDown, handleMouseEnter, endDrag,
+                    isRowSelected, getTargetLink, copyTableSelection, openTableSelection, showToast, toastMessage,
+                    selectType, selectCourse, tableTarget, setTableTarget, targetLabel,
+                    copyAllLinks, openSingleRow, handleRightClickCopy, generalLinks,
+                    roleFilter, setRoleFilter, coolSuffix, consolidatedUrl, copyToClipboard,
+                    allSelected, someSelected, toggleSelectAll,
+                    allMainCoolUrls, allRosterUrls, openAllMainCool, openAllRosters
+                };
+            }
+        }).mount('#app');
+    <\/script>
+<\/body>
+
+<\/html>`,
+    multiopen: `<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTU COOL 批量開啟工具<\/title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* === CSS 變數（對齊 TAICA 設計語言）=== */
+        :root {
+            --bg:      #e8e3d8;
+            --bg2:     #f6f3ee;
+            --bg3:     #ede9e0;
+            --bg4:     #d5cec2;
+            --border:  rgba(50, 32, 10, 0.10);
+            --border2: rgba(50, 32, 10, 0.18);
+            --t1: #1c1812;
+            --t2: #6b5e4e;
+            --t3: #a8967e;
+            --cyan:      #2a4faa;
+            --cyan-dim:  rgba(42, 79, 170, 0.08);
+            --cyan-glow: rgba(42, 79, 170, 0.18);
+            --amber:     #c24128;
+            --amber-dim: rgba(194, 65, 40, 0.08);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg);
+            color: var(--t1);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 48px 20px 60px;
+        }
+
+        /* === 主容器 === */
+        .container {
+            background: var(--bg2);
+            width: 100%;
+            max-width: 580px;
+            border-radius: 10px;
+            border: 1px solid var(--border2);
+            box-shadow:
+                0 1px 3px rgba(50, 32, 10, 0.07),
+                0 10px 30px rgba(50, 32, 10, 0.07);
+            overflow: hidden;
+        }
+
+        /* 頂部色帶（對齊 TAICA header stripe）*/
+        .top-stripe {
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan) 0%, #3a6fd8 45%, var(--amber) 100%);
+            flex-shrink: 0;
+        }
+
+        /* === 標題區 === */
+        .header {
+            padding: 26px 32px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h2 {
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            font-size: 1.55rem;
+            font-weight: 400;
+            color: var(--cyan);
+            letter-spacing: -0.01em;
+        }
+
+        .header-sub {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            color: var(--t3);
+            margin-top: 5px;
+        }
+
+        /* === 表單本體 === */
+        .form-body {
+            padding: 24px 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* === 表單群組 === */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .label-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--t2);
+            text-transform: uppercase;
+        }
+
+        .hint {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 11px;
+            color: var(--t3);
+            letter-spacing: 0;
+            font-weight: 400;
+            text-transform: none;
+            margin-left: 4px;
+        }
+
+        /* 清除按鈕 */
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--t3);
+            font-size: 11px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 4px;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .clear-btn:hover {
+            color: var(--amber);
+            background-color: var(--amber-dim);
+        }
+
+        /* 輸入元件 */
+        textarea,
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border2);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg3);
+            color: var(--t1);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        textarea {
+            height: 148px;
+            resize: vertical;
+            line-height: 1.65;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+        }
+
+        ::placeholder {
+            color: var(--t3);
+            opacity: 1;
+        }
+
+        textarea:focus,
+        select:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background-color: var(--bg2);
+            box-shadow: 0 0 0 3px var(--cyan-glow);
+        }
+
+        /* Select 自訂箭頭 */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8967e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+            cursor: pointer;
+        }
+
+        #customSuffixInput {
+            display: none;
+            margin-top: 8px;
+            border-left: 3px solid var(--cyan);
+            border-radius: 0 6px 6px 0;
+            background: var(--cyan-dim);
+        }
+
+        /* 核取方塊群組 */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--border2);
+            background: var(--bg4);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            accent-color: var(--cyan);
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--t1);
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .warning-text {
+            font-size: 11px;
+            color: var(--t3);
+            line-height: 1.6;
+            padding-left: 2px;
+        }
+
+        /* 分隔線 */
+        .divider {
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* === 按鈕區 === */
+        .actions {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
+
+        button.main-btn,
+        button.sub-btn {
+            padding: 11px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(.34, 1.4, .64, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            letter-spacing: 0.03em;
+        }
+
+        #openBtn {
+            background-color: var(--cyan);
+            color: #fff;
+            border: none;
+            box-shadow: 0 1px 3px rgba(42, 79, 170, 0.20);
+        }
+
+        #openBtn:hover:not(:disabled) {
+            background-color: #1e3d8f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(42, 79, 170, 0.28);
+        }
+
+        #openBtn:active:not(:disabled) { transform: translateY(0); }
+
+        #openBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #openRawBtn {
+            background-color: transparent;
+            color: var(--t2);
+            border: 1px solid var(--border2);
+        }
+
+        #openRawBtn:hover:not(:disabled) {
+            background-color: var(--bg3);
+            color: var(--t1);
+            border-color: var(--t3);
+            transform: translateY(-1px);
+        }
+
+        #openRawBtn:active:not(:disabled) { transform: translateY(0); }
+
+        #openRawBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* === 頁尾 === */
+        .footer {
+            padding: 11px 32px 14px;
+            border-top: 1px solid var(--border);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            color: var(--t3);
+            letter-spacing: 0.1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* === RWD === */
+        @media (max-width: 480px) {
+            body { padding: 20px 12px 40px; }
+            .header  { padding: 20px 20px 16px; }
+            .form-body { padding: 18px 20px 22px; }
+            .footer  { padding: 10px 20px 13px; }
+            .actions { grid-template-columns: 1fr; }
+        }
+    <\/style>
+<\/head>
+
+<body>
+
+    <div class="container">
+        <div class="top-stripe"><\/div>
+
+        <div class="header">
+            <h2>NTU COOL 批量開啟工具<\/h2>
+            <div class="header-sub">BATCH URL OPENER<\/div>
+        <\/div>
+
+        <div class="form-body">
+
+            <div class="form-group">
+                <div class="label-header">
+                    <label for="urlList">輸入資料 <span class="hint">(每行一個網址)<\/span><\/label>
+                    <button id="clearBtn" class="clear-btn" title="清除輸入框內容">清除資料<\/button>
+                <\/div>
+                <textarea id="urlList" placeholder="例如：
+https://cool.ntu.edu.tw/courses/1234
+https://cool.ntu.edu.tw/courses/5678"><\/textarea>
+            <\/div>
+
+            <div class="form-group">
+                <label for="suffix">選擇欲開啟的頁面<\/label>
+                <select id="suffix">
+                    <optgroup label="➤ 課程頁面批次開啟 (需貼上課程網址)">
+                        <option value="">課程首頁 (Home)<\/option>
+                        <option value="/modules">課程內容 (Modules)<\/option>
+                        <option value="/gradebook">成績 (Grades)<\/option>
+                        <option value="/users">成員 (People)<\/option>
+                        <option value="/assignments">作業 (Assignments)<\/option>
+                        <option value="/discussion_topics">討論 (Discussions)<\/option>
+                        <option value="/quizzes">測驗 (Quizzes)<\/option>
+                        <option value="/settings">設定 (Settings)<\/option>
+                        <option value="/settings/configurations#tab-details">設定 - 詳細資訊<\/option>
+                        <option value="/settings/configurations#tab-sections">設定 - 班別 (Sections)<\/option>
+                        <option value="custom">自訂後綴路徑...<\/option>
+                    <\/optgroup>
+                    <optgroup label="➤ 成員搜尋 (需貼上學號/Email)">
+                        <option value="search-users">搜尋使用者 (Admin Search)<\/option>
+                    <\/optgroup>
+                <\/select>
+                <input type="text" id="customSuffixInput" placeholder="輸入自訂後綴 (例如 /files)" />
+            <\/div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fastMode">
+                    <label for="fastMode">快速模式（無延遲開啟）<\/label>
+                <\/div>
+                <div class="warning-text">※ 建議用於分頁數不多的情況，不建議使用於開大量 Google Workspace 相關網站<\/div>
+            <\/div>
+
+            <div class="divider"><\/div>
+
+            <div class="actions">
+                <button id="openBtn" class="main-btn">執行批次開啟<\/button>
+                <button id="openRawBtn" class="sub-btn" title="忽略選單設定，直接開啟上方網址">直接開啟網址<\/button>
+            <\/div>
+
+        <\/div>
+
+        <div class="footer">
+            <span>NTU COOL · BATCH OPENER<\/span>
+            <span>cool.ntu.edu.tw<\/span>
+        <\/div>
+    <\/div>
+
+    <script>
+        const suffixSelect = document.getElementById('suffix');
+        const customInput = document.getElementById('customSuffixInput');
+        const urlList = document.getElementById('urlList');
+        const openBtn = document.getElementById('openBtn');
+        const openRawBtn = document.getElementById('openRawBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const fastMode = document.getElementById('fastMode'); // 新增
+
+        // 切換顯示自訂輸入框
+        suffixSelect.addEventListener('change', () => {
+            customInput.style.display = suffixSelect.value === 'custom' ? 'block' : 'none';
+            if (suffixSelect.value === 'custom') {
+                customInput.focus();
+            }
+        });
+
+        // === 清除資料功能 ===
+        clearBtn.addEventListener('click', () => {
+            if (!urlList.value.trim()) return;
+            if (confirm('確定要清除所有輸入的資料嗎？')) {
+                urlList.value = '';
+                urlList.focus();
+                updateStatus('');
+            }
+        });
+
+        // 輔助函式：更新網頁標題
+        function updateStatus(msg) {
+            if (msg) {
+                const match = msg.match(/(\\d+\\s*\\/\\s*\\d+)/);
+                document.title = match ? \`[\${match[1]}] 處理中...\` : msg;
+            } else {
+                document.title = 'NTU COOL 批量開啟工具';
+            }
+        }
+
+        // 輔助函式：按鈕 Loading 狀態
+        function setLoading(btn, isLoading) {
+            if (isLoading) {
+                btn.dataset.originalText = btn.innerText;
+                btn.innerText = '處理中...';
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            } else {
+                setTimeout(() => {
+                    btn.innerText = btn.dataset.originalText;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    // 3秒後清除狀態訊息
+                    setTimeout(() => updateStatus(''), 3000);
+                }, 1000);
+            }
+        }
+
+        // 取得延遲時間 (極速模式為 0，否則為 300ms)
+        function getDelay() {
+            return fastMode.checked ? 0 : 300;
+        }
+
+        // === 主要功能：智慧判斷並開啟 ===
+        openBtn.addEventListener('click', () => {
+            const raw = urlList.value;
+            let suffix = suffixSelect.value;
+            const delay = getDelay(); // 取得延遲設定
+
+            if (!raw.trim()) {
+                alert('請先輸入資料');
+                urlList.focus();
+                return;
+            }
+
+            setLoading(openBtn, true);
+            updateStatus('正在解析...');
+
+            const entries = raw.split(/[\\n,]+/).map(s => s.trim()).filter(Boolean);
+
+            // 模式 A：搜尋學號
+            if (suffix === 'search-users') {
+                entries.forEach((id, i) => {
+                    const cleanId = id.includes('@') ? id.split('@')[0] : id;
+                    const url = \`https://cool.ntu.edu.tw/accounts/1/users?search_term=\${encodeURIComponent(cleanId)}&role_filter_id=&page=\`;
+                    setTimeout(() => {
+                        window.open(url, '_blank');
+                        updateStatus(\`正在搜尋第 \${i + 1} / \${entries.length} 位使用者...\`);
+                    }, i * delay);
+                });
+
+                setTimeout(() => {
+                    updateStatus(\`已完成\`);
+                    setLoading(openBtn, false);
+                }, entries.length * delay + 500);
+                return;
+            }
+
+            // 模式 B：自訂後綴
+            if (suffix === 'custom') {
+                let c = customInput.value.trim();
+                if (!c) {
+                    alert('請輸入自訂後綴內容');
+                    customInput.focus();
+                    setLoading(openBtn, false);
+                    updateStatus('');
+                    return;
+                }
+                if (!c.startsWith('/') && !c.startsWith('#')) c = '/' + c;
+                suffix = c;
+            }
+
+            // 模式 C：一般課程網址處理
+            const validUrls = entries.filter(u => u.includes('cool.ntu.edu.tw/courses/'));
+
+            if (!validUrls.length) {
+                alert('未偵測到有效的 COOL 課程連結。\\n若要開啟非課程連結，請使用右下角的「直接開啟網址」。');
+                setLoading(openBtn, false);
+                updateStatus('');
+                return;
+            }
+
+            validUrls.forEach((u, i) => {
+                let urlObj;
+                try {
+                    urlObj = new URL(u.startsWith('http') ? u : 'https://' + u);
+                } catch { return; }
+
+                if (suffix.includes('#')) {
+                    const [pathSuffix, frag] = suffix.split('#');
+                    urlObj.pathname = urlObj.pathname.replace(/\\/+$/, '') + (pathSuffix || '');
+                    urlObj.hash = '#' + frag;
+                } else {
+                    urlObj.pathname = urlObj.pathname.replace(/\\/+$/, '') + suffix;
+                }
+
+                setTimeout(() => {
+                    window.open(urlObj.href, '_blank');
+                    updateStatus(\`開啟中 \${i + 1} / \${validUrls.length}\`);
+                }, i * delay);
+            });
+
+            setTimeout(() => {
+                updateStatus(\`已完成\`);
+                setLoading(openBtn, false);
+            }, validUrls.length * delay + 500);
+        });
+
+        // === 次要功能：直接開啟原始連結 ===
+        openRawBtn.addEventListener('click', () => {
+            const raw = urlList.value;
+            const delay = getDelay(); // 取得延遲設定
+
+            if (!raw.trim()) {
+                alert('請先輸入網址');
+                urlList.focus();
+                return;
+            }
+
+            setLoading(openRawBtn, true);
+            updateStatus('準備開啟...');
+
+            const entries = raw.split(/[\\n,]+/).map(s => s.trim()).filter(Boolean);
+            let openedCount = 0;
+
+            entries.forEach((u, i) => {
+                let urlStr = u;
+                try {
+                    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(urlStr)) {
+                        urlStr = 'https://' + urlStr.replace(/^\\/+/, '');
+                    }
+                    const urlObj = new URL(urlStr);
+
+                    setTimeout(() => {
+                        window.open(urlObj.href, '_blank');
+                        updateStatus(\`開啟中 \${i + 1} / \${entries.length}\`);
+                    }, i * delay);
+                    openedCount++;
+                } catch (_) { }
+            });
+
+            setTimeout(() => {
+                if (openedCount === 0) {
+                    alert('無法識別有效的網址，請檢查輸入內容。');
+                    updateStatus('');
+                } else {
+                    updateStatus(\`全部完成\`);
+                }
+                setLoading(openRawBtn, false);
+            }, entries.length * delay + 500);
+        });
+    <\/script>
+<\/body>
+
+<\/html>
+`,
+    mailgen: `<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信件生成器<\/title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2a4faa',       // 靛藍
+                        'primary-hover': '#1e3d8f', // 深靛藍
+                        'warm-bg': '#e8e3d8',       // 暖米色（統一）
+                        'card-bg': '#f6f3ee',       // 面板底色（統一）
+                        'warm-black': '#1c1812',   // 暖黑（統一）
+                        'warm-gray': '#6b5e4e',     // 暖灰（統一）
+                        'warm-border': '#d5cec2', // 邊框色（統一）
+                        'info-bg': '#edf0fa',       // 資訊框背景（淡靛藍）
+                        'info-text': '#2a4faa',     // 資訊框文字
+                        'info-border': '#adb8dd', // 資訊框邊框
+                        'success-bg': '#f0fdf4',   // 成功綠背景
+                        'success-border': '#22c55e', // 成功綠邊框
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(50, 32, 10, 0.07), 0 2px 4px -1px rgba(50, 32, 10, 0.05)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    <\/script>
+    <script src="https://unpkg.com/lucide@latest" onerror="console.warn('Lucide icons failed to load');"><\/script>
+    <style>
+        /* 共用的列表樣式：針對編輯器、預覽區塊以及複製用的隱藏區塊 */
+        #editor-content,
+        .email-content,
+        .outlook-copy-wrapper {
+            font-family: 'Calibri', sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000000;
+        }
+
+        /* 超連結樣式：強制藍色底線 (保持 Outlook 兼容性，不隨 UI 主題變色) */
+        #editor-content a,
+        .email-content a,
+        .outlook-copy-wrapper a {
+            color: blue !important;
+            text-decoration: underline !important;
+            cursor: pointer;
+        }
+
+        /* 強制復原列表樣式 */
+        #editor-content ul,
+        .email-content ul,
+        .outlook-copy-wrapper ul {
+            list-style-type: disc !important;
+            margin-left: 24px !important;
+            margin-bottom: 8px;
+        }
+
+        #editor-content ol,
+        .email-content ol,
+        .outlook-copy-wrapper ol {
+            list-style-type: decimal !important;
+            margin-left: 24px !important;
+            margin-bottom: 8px;
+        }
+
+        #editor-content li,
+        .email-content li,
+        .outlook-copy-wrapper li {
+            padding-left: 4px;
+        }
+
+        /* 編輯器高度設定 */
+        #editor-content {
+            min-height: 300px;
+        }
+
+        /* 隱藏未激活的標籤頁 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 色盤選單樣式 */
+        .color-menu {
+            display: none;
+        }
+
+        .color-menu.open {
+            display: block;
+        }
+
+        /* BCC 行顯示控制 */
+        .bcc-row {
+            display: none;
+            /* 預設隱藏 */
+        }
+
+        .show-bcc .bcc-row {
+            display: flex;
+            /* 開啟時顯示 */
+        }
+
+        /* 自訂輸入框 Focus 樣式覆蓋 */
+        input:focus,
+        textarea:focus,
+        select:focus,
+        #editor-content:focus {
+            outline: none;
+            border-color: #2a4faa !important;
+            box-shadow: 0 0 0 3px rgba(42, 79, 170, 0.18) !important;
+        }
+
+        /* 表格固定表頭 */
+        thead.sticky-header th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 已複製卡片的樣式 */
+        .card-copied {
+            background-color: #f0fdf4 !important;
+            /* success-bg */
+            border-color: #22c55e !important;
+            /* success-border */
+            transition: all 0.3s ease;
+        }
+
+        .card-copied .status-badge {
+            display: inline-flex !important;
+        }
+    <\/style>
+<\/head>
+
+<body class="bg-warm-bg text-warm-black font-sans min-h-screen p-4">
+    <div style="height:3px;background:linear-gradient(90deg,#1a2f6e 0%,#2a4faa 55%,#c24128 100%);position:fixed;top:0;left:0;right:0;z-index:999;"><\/div>
+    <div style="height:3px;flex-shrink:0;"><\/div>
+
+    <div class="max-w-5xl mx-auto bg-card-bg rounded-xl shadow-soft overflow-hidden border border-warm-border">
+
+        <div class="bg-primary p-6 text-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <i data-lucide="mail" class="h-6 w-6"><\/i> 信件生成器
+                <\/h1>
+                <p class="text-xs text-white/80 mt-1 ml-8"><\/p>
+            <\/div>
+            <div class="flex gap-2 w-full sm:w-auto overflow-x-auto">
+                <button onclick="switchTab('data')" id="btn-tab-data"
+                    class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-primary shadow-sm">
+                    1. 匯入資料
+                <\/button>
+                <button onclick="switchTab('template')" id="btn-tab-template"
+                    class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-primary-hover text-white hover:bg-[#162e6b]">
+                    2. 編輯模板
+                <\/button>
+                <button onclick="switchTab('preview')" id="btn-tab-preview"
+                    class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-primary-hover text-white hover:bg-[#162e6b]">
+                    3. 草稿預覽
+                <\/button>
+            <\/div>
+        <\/div>
+
+        <div class="p-6">
+
+            <div id="tab-data" class="tab-content active space-y-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+                            <i data-lucide="users" class="h-5 w-5"><\/i> 資料來源
+                        <\/h2>
+
+                        <div class="flex items-center gap-2">
+                            <label
+                                class="cursor-pointer text-xs flex items-center gap-1 text-primary hover:text-white border border-primary hover:bg-primary px-3 py-1.5 rounded transition-colors shadow-sm font-medium"
+                                title="支援 .csv 或 .txt 檔案 (建議 UTF-8 編碼)">
+                                <i data-lucide="upload" class="w-3 h-3"><\/i> 上傳 CSV
+                                <input type="file" id="file-upload" accept=".csv,.txt,.tsv" class="hidden"
+                                    onchange="handleFileUpload(this)">
+                            <\/label>
+
+                            <button onclick="clearData()"
+                                class="text-xs flex items-center gap-1 text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1.5 rounded transition-colors border border-transparent hover:border-red-200"
+                                title="清空所有資料">
+                                <i data-lucide="trash-2" class="w-3 h-3"><\/i> 清空
+                            <\/button>
+                        <\/div>
+                    <\/div>
+                    <span id="data-count"
+                        class="text-sm text-warm-gray bg-warm-bg border border-warm-border px-3 py-1 rounded-full">
+                        共 0 筆
+                    <\/span>
+                <\/div>
+
+                <div class="bg-info-bg p-4 rounded-lg border border-info-border text-sm text-info-text mb-4 shadow-sm">
+                    <p class="font-bold flex items-center gap-2"><i data-lucide="alert-circle" class="h-4 w-4"><\/i>
+                        使用說明：<\/p>
+                    <ul class="list-disc list-inside mt-1 ml-1 space-y-1">
+                        <li>請直接從 Excel/Google Sheets 複製表格內容並貼在下方，或使用上方「上傳 CSV」按鈕。<\/li>
+                        <li><strong>支援多行資料：<\/strong>若同一格有多個 Email (換行分隔)，系統會自動辨識並處理。<\/li>
+                        <li>第一列必須是「標題」（例如：姓名、Email、CC），這些將成為變數。<\/li>
+                        <li><strong>動態超連結：<\/strong>若要讓每封信的連結不同，請在「插入超連結」時，點擊下方的變數按鈕，例如 <code>{課程連結}<\/code>。<\/li>
+                        <li class="font-bold">若資料中的連結是空的，系統會自動將該連結轉換為純文字。<\/li>
+                        <li
+                            class="text-primary bg-white border border-info-border py-1 px-2 rounded -ml-2 my-1 inline-block font-semibold shadow-sm">
+                            自動抓取關鍵字：
+                            <br>• 收件人：Email、email、信箱、收件人
+                            <br>• 副本：CC、cc、副本
+                            <br>• 密件副本：BCC、bcc、密件副本
+                        <\/li>
+                    <\/ul>
+                <\/div>
+
+                <textarea id="csv-input"
+                    class="w-full h-64 p-4 border border-warm-border rounded-lg font-mono text-sm text-warm-black focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-shadow"
+                    placeholder="在此貼上 Excel 資料..."><\/textarea>
+
+                <div class="bg-warm-bg p-4 rounded-lg border border-warm-border mt-2 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="group-enable"
+                                class="w-4 h-4 text-primary rounded focus:ring-primary border-warm-border"
+                                onchange="toggleGrouping()">
+                            <span class="font-medium text-warm-black">啟用合併寄信 (Group Merge)<\/span>
+                        <\/label>
+
+                        <div id="group-settings"
+                            class="hidden flex flex-col sm:flex-row sm:items-center gap-2 animate-fade-in">
+                            <span class="text-sm text-warm-gray">依據欄位合併：<\/span>
+                            <select id="group-column"
+                                class="p-1.5 border border-warm-border rounded text-sm outline-none focus:border-primary bg-white text-warm-black"
+                                onchange="updateGroupingColumn()"><\/select>
+                            <span class="text-xs text-warm-gray ml-1">(相同值的列將合併，Email / 副本 / BCC 用分號串接，其他用頓號串接)<\/span>
+                        <\/div>
+                    <\/div>
+                <\/div>
+
+                <div id="table-preview-container"
+                    class="overflow-x-auto overflow-y-auto max-h-[500px] border border-warm-border rounded-lg mt-4 hidden">
+                <\/div>
+            <\/div>
+
+            <div id="tab-template" class="tab-content space-y-6">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+                            <i data-lucide="file-text" class="h-5 w-5"><\/i> 信件模板
+                        <\/h2>
+                        <button onclick="clearTemplate()"
+                            class="text-xs flex items-center gap-1 text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded transition-colors border border-transparent hover:border-red-200"
+                            title="清空主旨與內文">
+                            <i data-lucide="trash-2" class="w-3 h-3"><\/i> 清空模板
+                        <\/button>
+                    <\/div>
+
+                    <div class="w-1/3 text-right">
+                        <span class="text-xs text-warm-gray block mb-1">插入變數<\/span>
+                        <div id="variable-buttons" class="flex flex-wrap gap-1 justify-end">
+                        <\/div>
+                        <p class="text-xs text-warm-gray mt-1 flex flex-col items-end gap-1">
+                            <span class="flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"><\/i>
+                                <code>:姓<\/code> 取第一個字 (例: <code>{姓名:姓}<\/code>)<\/span>
+                            <span class="flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"><\/i>
+                                <code>:前<\/code> 取 @ 前內容 (例: <code>{Email:前}<\/code>)<\/span>
+                        <\/p>
+                    <\/div>
+                <\/div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-warm-gray mb-1">主旨<\/label>
+                        <input type="text" id="subject-input"
+                            class="w-full p-2 border border-warm-border rounded-md text-warm-black focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-shadow">
+                    <\/div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-warm-gray mb-1">內文 (預設字體: Calibri, 12pt)<\/label>
+
+                        <div
+                            class="flex flex-wrap gap-1 p-2 bg-warm-bg border border-b-0 border-warm-border rounded-t-md select-none items-center relative">
+                            <button onmousedown="handleToolbar(event, 'removeFormat')"
+                                class="p-1.5 hover:bg-white hover:text-red-600 rounded text-warm-gray transition-colors"
+                                title="清除格式 (重設為預設字體)"><i data-lucide="eraser" class="w-4 h-4"><\/i><\/button>
+
+                            <div class="w-px h-6 bg-warm-border mx-1 self-center"><\/div>
+
+                            <button onmousedown="handleToolbar(event, 'bold')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="粗體"><i data-lucide="bold" class="w-4 h-4"><\/i><\/button>
+                            <button onmousedown="handleToolbar(event, 'italic')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="斜體"><i data-lucide="italic" class="w-4 h-4"><\/i><\/button>
+                            <button onmousedown="handleToolbar(event, 'underline')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="底線"><i data-lucide="underline" class="w-4 h-4"><\/i><\/button>
+
+                            <div class="w-px h-6 bg-warm-border mx-1 self-center"><\/div>
+
+                            <div class="relative inline-block">
+                                <button onmousedown="toggleColorMenu(event, 'text-color-menu')"
+                                    class="p-1.5 hover:bg-white hover:text-primary rounded flex items-center gap-1 text-warm-gray transition-colors"
+                                    title="文字顏色">
+                                    <i data-lucide="type" class="w-4 h-4"><\/i>
+                                    <div class="w-3 h-3 rounded-full bg-black border border-warm-border"><\/div>
+                                <\/button>
+                                <div id="text-color-menu"
+                                    class="color-menu absolute top-full left-0 mt-1 p-3 bg-white border border-warm-border shadow-soft rounded-lg z-50 w-40">
+                                    <div class="text-xs text-warm-gray mb-2 font-bold">常用顏色<\/div>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button onmousedown="applyColor(event, 'foreColor', '#000000')"
+                                            class="w-6 h-6 rounded-full bg-black border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="黑色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#FF0000')"
+                                            class="w-6 h-6 rounded-full bg-red-600 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="紅色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#0000FF')"
+                                            class="w-6 h-6 rounded-full bg-blue-600 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="藍色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#008000')"
+                                            class="w-6 h-6 rounded-full bg-green-600 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="綠色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#FFA500')"
+                                            class="w-6 h-6 rounded-full bg-orange-500 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="橘色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#800080')"
+                                            class="w-6 h-6 rounded-full bg-purple-600 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="紫色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#808080')"
+                                            class="w-6 h-6 rounded-full bg-gray-500 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="灰色"><\/button>
+                                        <button onmousedown="applyColor(event, 'foreColor', '#FFFFFF')"
+                                            class="w-6 h-6 rounded-full bg-white border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="白色"><\/button>
+                                    <\/div>
+                                <\/div>
+                            <\/div>
+
+                            <div class="relative inline-block">
+                                <button onmousedown="toggleColorMenu(event, 'bg-color-menu')"
+                                    class="p-1.5 hover:bg-white hover:text-primary rounded flex items-center gap-1 text-warm-gray transition-colors"
+                                    title="背景顏色 (螢光筆)">
+                                    <i data-lucide="highlighter" class="w-4 h-4"><\/i>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-300 border border-warm-border"><\/div>
+                                <\/button>
+                                <div id="bg-color-menu"
+                                    class="color-menu absolute top-full left-0 mt-1 p-3 bg-white border border-warm-border shadow-soft rounded-lg z-50 w-40">
+                                    <div class="text-xs text-warm-gray mb-2 font-bold">螢光筆<\/div>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button onmousedown="applyColor(event, 'hiliteColor', '#FFFF00')"
+                                            class="w-6 h-6 rounded-full bg-yellow-300 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="黃色"><\/button>
+                                        <button onmousedown="applyColor(event, 'hiliteColor', '#00FF00')"
+                                            class="w-6 h-6 rounded-full bg-green-300 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="綠色"><\/button>
+                                        <button onmousedown="applyColor(event, 'hiliteColor', '#00FFFF')"
+                                            class="w-6 h-6 rounded-full bg-cyan-300 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="藍色"><\/button>
+                                        <button onmousedown="applyColor(event, 'hiliteColor', '#FF00FF')"
+                                            class="w-6 h-6 rounded-full bg-pink-300 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="粉色"><\/button>
+                                        <button onmousedown="applyColor(event, 'hiliteColor', '#D1D5DB')"
+                                            class="w-6 h-6 rounded-full bg-gray-300 border border-warm-border hover:scale-110 transition-transform shadow-sm"
+                                            title="灰色"><\/button>
+                                        <button onmousedown="applyColor(event, 'hiliteColor', 'transparent')"
+                                            class="w-6 h-6 rounded-full bg-white border border-warm-border hover:scale-110 transition-transform shadow-sm relative text-red-500 flex items-center justify-center font-bold"
+                                            title="清除">
+                                            <i data-lucide="x" class="w-3 h-3"><\/i>
+                                        <\/button>
+                                    <\/div>
+                                <\/div>
+                            <\/div>
+
+                            <div class="w-px h-6 bg-warm-border mx-1 self-center"><\/div>
+
+                            <button onmousedown="handleToolbar(event, 'insertUnorderedList')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="項目符號"><i data-lucide="list" class="w-4 h-4"><\/i><\/button>
+
+                            <div class="w-px h-6 bg-warm-border mx-1 self-center"><\/div>
+
+                            <button onmousedown="handleToolbar(event, 'createLink')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="插入超連結 (支援變數)"><i data-lucide="link" class="w-4 h-4"><\/i><\/button>
+                            <button onmousedown="handleToolbar(event, 'unlink')"
+                                class="p-1.5 hover:bg-white hover:text-primary rounded text-warm-gray transition-colors"
+                                title="移除超連結"><i data-lucide="link-2-off" class="w-4 h-4"><\/i><\/button>
+                        <\/div>
+
+                        <div id="editor-content" contenteditable="true"
+                            class="w-full p-4 border border-warm-border rounded-b-md focus:ring-2 focus:ring-primary focus:border-primary outline-none overflow-y-auto transition-shadow">
+                        <\/div>
+                    <\/div>
+                <\/div>
+            <\/div>
+
+            <div id="tab-preview" class="tab-content space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+                        <i data-lucide="play" class="h-5 w-5"><\/i> 草稿預覽
+                    <\/h2>
+                    <label
+                        class="flex items-center gap-2 cursor-pointer select-none text-sm text-warm-gray hover:text-primary transition-colors">
+                        <input type="checkbox" id="bcc-toggle"
+                            class="w-4 h-4 text-primary rounded focus:ring-primary border-warm-border"
+                            onchange="toggleBCC()">
+                        顯示密件副本 (BCC)
+                    <\/label>
+                <\/div>
+
+                <div id="preview-container" class="grid gap-6">
+                    <div
+                        class="text-center py-10 bg-warm-bg border border-dashed border-warm-border rounded-lg text-warm-gray">
+                        請先輸入資料並確認模板
+                    <\/div>
+                <\/div>
+            <\/div>
+
+        <\/div>
+    <\/div>
+
+    <div id="link-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden animate-fade-in">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md border border-warm-border relative">
+            <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                <i data-lucide="link" class="w-5 h-5"><\/i> 插入超連結
+            <\/h3>
+
+            <label class="block text-sm font-medium text-warm-gray mb-1">連結網址 (URL)<\/label>
+            <div class="relative mb-4">
+                <input type="text" id="link-url-input"
+                    class="w-full p-2 border border-warm-border rounded-md text-warm-black focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    placeholder="https://example.com/...">
+            <\/div>
+
+            <div class="mb-6">
+                <span class="text-xs text-warm-gray block mb-2 font-bold">點擊下方按鈕插入變數：<\/span>
+                <div id="link-modal-variables" class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1">
+                <\/div>
+            <\/div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-warm-border">
+                <button onclick="closeLinkModal()"
+                    class="px-4 py-2 rounded text-sm text-warm-gray hover:bg-gray-100 transition-colors font-medium">取消<\/button>
+                <button onclick="confirmInsertLink()"
+                    class="px-4 py-2 rounded text-sm bg-primary text-white hover:bg-primary-hover transition-colors shadow-sm font-bold">確認插入<\/button>
+            <\/div>
+        <\/div>
+    <\/div>
+
+    <script>
+        // --- 初始狀態與變數 ---
+        const defaultData = \`姓名,Email,學校,課程名稱,課程連結
+王大明,ming@example.com,臺北科技大學,人工智慧導論,https://ntut.edu.tw/ai
+李小華,"hua@example.com\\nlee@gmail.com",成功大學,Python基礎,https://ncku.edu.tw/python
+張志明,chang@example.com,清華大學,資料結構,
+陳小美,may@example.com,台灣大學,網頁設計,\`;
+
+        const defaultBody = \`<div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您好 <b>{姓名:姓}<\/b> 老師：<\/span><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">感謝您在 {學校} 開設「<span style="color: blue;">{課程名稱}<\/span>」。<\/span><\/div><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您的課程連結如下：<\/span><\/div><div><a href="{課程連結}" style="font-family: Calibri, sans-serif; font-size: 12pt;">{課程連結}<\/a><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">(若連結為空，則不顯示連結)<\/span><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">教務團隊 敬上<\/span><\/div>\`;
+
+        let state = {
+            csvInput: defaultData,
+            subjectTemplate: '關於 {學校} 的 {課程名稱} 開課通知',
+            parsedData: [],
+            displayData: [],
+            headers: [],
+            bodyTemplate: defaultBody,
+            grouping: { enabled: false, column: '' },
+            showBCC: false
+        };
+
+        const STORAGE_KEY = 'email_generator_state_v18_csv'; // Version bump
+        let savedRange = null;
+        let lastFocusedElement = null; // Track last focused input/editor
+
+        // DOM 元素引用
+        const els = {
+            csvInput: document.getElementById('csv-input'),
+            dataCount: document.getElementById('data-count'),
+            tablePreview: document.getElementById('table-preview-container'),
+            variableButtons: document.getElementById('variable-buttons'),
+            subjectInput: document.getElementById('subject-input'),
+            editor: document.getElementById('editor-content'),
+            previewContainer: document.getElementById('preview-container'),
+            groupEnable: document.getElementById('group-enable'),
+            groupSettings: document.getElementById('group-settings'),
+            groupColumn: document.getElementById('group-column'),
+            bccToggle: document.getElementById('bcc-toggle'),
+            // Modal Elements
+            linkModal: document.getElementById('link-modal'),
+            linkUrlInput: document.getElementById('link-url-input'),
+            linkModalVariables: document.getElementById('link-modal-variables'),
+
+            btns: {
+                data: document.getElementById('btn-tab-data'),
+                template: document.getElementById('btn-tab-template'),
+                preview: document.getElementById('btn-tab-preview')
+            },
+            tabs: {
+                data: document.getElementById('tab-data'),
+                template: document.getElementById('tab-template'),
+                preview: document.getElementById('tab-preview')
+            }
+        };
+
+        // --- 初始化 ---
+        function init() {
+            try {
+                loadState();
+                els.csvInput.value = state.csvInput;
+                els.subjectInput.value = state.subjectTemplate;
+                els.editor.innerHTML = state.bodyTemplate || defaultBody;
+
+                els.groupEnable.checked = state.grouping.enabled;
+                if (state.grouping.enabled) els.groupSettings.classList.remove('hidden');
+
+                els.bccToggle.checked = state.showBCC;
+                updateBCCVisibility();
+
+                // Default focus tracking
+                lastFocusedElement = els.editor;
+
+                els.csvInput.addEventListener('input', (e) => {
+                    state.csvInput = e.target.value;
+                    parseData();
+                    saveState();
+                });
+
+                els.subjectInput.addEventListener('input', (e) => {
+                    state.subjectTemplate = e.target.value;
+                    saveState();
+                });
+                // Track focus on subject input
+                els.subjectInput.addEventListener('focus', () => {
+                    lastFocusedElement = els.subjectInput;
+                });
+
+                els.editor.addEventListener('input', (e) => {
+                    state.bodyTemplate = els.editor.innerHTML;
+                    saveState();
+                });
+                // Track focus on editor
+                els.editor.addEventListener('focus', () => {
+                    lastFocusedElement = els.editor;
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.relative.inline-block') && !e.target.closest('#link-modal')) {
+                        closeAllMenus();
+                    }
+                });
+
+                parseData();
+
+                // Safe lucide loading
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                } else {
+                    console.warn('Lucide icons not loaded yet.');
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        }
+
+        // --- File Upload Handler ---
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target.result;
+                els.csvInput.value = content;
+                state.csvInput = content;
+                parseData();
+                saveState();
+                input.value = ''; // Reset file input
+                alert(\`已成功讀取檔案：\${file.name}\`);
+            };
+            reader.onerror = () => {
+                alert('檔案讀取發生錯誤');
+                input.value = '';
+            };
+            // Default to UTF-8
+            reader.readAsText(file);
+        }
+
+        // --- Improved Robust CSV/TSV Parser ---
+        function parseCSVToObjects(text) {
+            if (!text || !text.trim()) return { headers: [], data: [] };
+
+            const chunk = text.substring(0, 5000);
+            const tabCount = (chunk.match(/\\t/g) || []).length;
+            const commaCount = (chunk.match(/,/g) || []).length;
+            const delimiter = tabCount >= commaCount && tabCount > 0 ? '\\t' : ',';
+
+            const rows = [];
+            let currentRow = [];
+            let currentValue = '';
+            let insideQuote = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (char === '"') {
+                    if (insideQuote && nextChar === '"') {
+                        currentValue += '"';
+                        i++;
+                    } else {
+                        insideQuote = !insideQuote;
+                    }
+                } else if (char === delimiter && !insideQuote) {
+                    currentRow.push(currentValue);
+                    currentValue = '';
+                } else if ((char === '\\n' || char === '\\r') && !insideQuote) {
+                    if (char === '\\r' && nextChar === '\\n') i++;
+                    currentRow.push(currentValue);
+                    rows.push(currentRow);
+                    currentRow = [];
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+            }
+            if (currentValue || currentRow.length > 0) {
+                currentRow.push(currentValue);
+                rows.push(currentRow);
+            }
+
+            if (rows.length === 0) return { headers: [], data: [] };
+
+            const headers = rows[0].map(h => h.trim());
+            const data = rows.slice(1).map(row => {
+                const obj = {};
+                headers.forEach((h, index) => {
+                    let val = row[index] || '';
+                    obj[h] = val;
+                });
+                return obj;
+            });
+
+            return { headers, data };
+        }
+
+        function cleanEmailField(value) {
+            if (!value) return '';
+            let cleaned = value.replace(/[\\n\\r, ]+/g, ';');
+            cleaned = cleaned.replace(/;+/g, ';');
+            cleaned = cleaned.replace(/^;+|;+$/g, '');
+            return cleaned;
+        }
+
+        function parseData() {
+            const result = parseCSVToObjects(state.csvInput);
+            state.headers = result.headers;
+
+            state.parsedData = result.data.map(row => {
+                const newRow = { ...row };
+                Object.keys(newRow).forEach(key => {
+                    const kLower = key.toLowerCase();
+                    if (['email', '收件人', '信箱', 'cc', 'bcc', '副本', '密件副本'].some(term => kLower.includes(term))) {
+                        newRow[key] = cleanEmailField(newRow[key]);
+                    }
+                });
+                return newRow;
+            });
+
+            state.displayData = [];
+            updateDataUI();
+
+            updateGroupingUI();
+            applyGrouping();
+        }
+
+        function updateDataUI() {
+            els.dataCount.innerText = \`共 \${state.displayData.length} 筆\`;
+
+            if (state.displayData.length > 0) {
+                let tableHTML = \`<table class="min-w-full divide-y divide-gray-200"><thead class="bg-warm-bg sticky-header"><tr>\`;
+                state.headers.forEach(h => {
+                    tableHTML += \`<th class="px-3 py-2 text-left text-xs font-medium text-warm-gray uppercase whitespace-nowrap bg-warm-bg">\${h}<\/th>\`;
+                });
+                tableHTML += \`<\/tr><\/thead><tbody class="bg-white divide-y divide-gray-200">\`;
+
+                state.displayData.forEach(row => {
+                    tableHTML += \`<tr>\`;
+                    state.headers.forEach(h => {
+                        let cellContent = row[h] || '';
+                        if (cellContent.length > 30) cellContent = cellContent.substring(0, 30) + '...';
+                        tableHTML += \`<td class="px-3 py-2 text-sm text-warm-black whitespace-nowrap" title="\${row[h]}">\${cellContent}<\/td>\`;
+                    });
+                    tableHTML += \`<\/tr>\`;
+                });
+                tableHTML += \`<\/tbody><\/table>\`;
+                els.tablePreview.innerHTML = tableHTML;
+                els.tablePreview.classList.remove('hidden');
+            } else {
+                els.tablePreview.classList.add('hidden');
+            }
+
+            els.variableButtons.innerHTML = '';
+            state.headers.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = "px-2 py-1 bg-warm-bg hover:bg-white hover:text-primary border border-warm-border rounded text-xs text-warm-gray transition-colors";
+                btn.innerText = \`{\${h}}\`;
+                btn.onmousedown = (e) => insertVariable(e, \`{\${h}}\`);
+                els.variableButtons.appendChild(btn);
+            });
+        }
+
+        function toggleBCC() {
+            state.showBCC = els.bccToggle.checked;
+            updateBCCVisibility();
+            saveState();
+        }
+
+        function updateBCCVisibility() {
+            const container = els.previewContainer;
+            if (state.showBCC) {
+                container.classList.add('show-bcc');
+            } else {
+                container.classList.remove('show-bcc');
+            }
+        }
+
+        function saveState() {
+            try {
+                const dataToSave = {
+                    csvInput: state.csvInput,
+                    subjectTemplate: state.subjectTemplate,
+                    bodyTemplate: state.bodyTemplate,
+                    grouping: state.grouping,
+                    showBCC: state.showBCC
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            } catch (e) { console.error(e); }
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state.csvInput = parsed.csvInput !== undefined ? parsed.csvInput : defaultData;
+                    state.subjectTemplate = parsed.subjectTemplate !== undefined ? parsed.subjectTemplate : '關於 {學校} 的 {課程名稱} 開課通知';
+                    state.bodyTemplate = parsed.bodyTemplate !== undefined ? parsed.bodyTemplate : defaultBody;
+                    if (parsed.grouping) state.grouping = parsed.grouping;
+                    if (parsed.showBCC !== undefined) state.showBCC = parsed.showBCC;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function clearData() {
+            if (confirm("確定要清空所有資料嗎？此動作無法復原。")) {
+                state.csvInput = "";
+                els.csvInput.value = "";
+                parseData();
+                saveState();
+            }
+        }
+
+        function clearTemplate() {
+            if (confirm("確定要清空主旨與內文模板嗎？")) {
+                state.subjectTemplate = "";
+                state.bodyTemplate = "";
+                els.subjectInput.value = "";
+                els.editor.innerHTML = "";
+                saveState();
+            }
+        }
+
+        function toggleGrouping() {
+            state.grouping.enabled = els.groupEnable.checked;
+            if (state.grouping.enabled) {
+                els.groupSettings.classList.remove('hidden');
+            } else {
+                els.groupSettings.classList.add('hidden');
+            }
+            if (state.grouping.enabled && !state.grouping.column && state.headers.length > 0) {
+                state.grouping.column = state.headers[0];
+            }
+            updateGroupingUI();
+            applyGrouping();
+            saveState();
+        }
+
+        function updateGroupingColumn() {
+            state.grouping.column = els.groupColumn.value;
+            applyGrouping();
+            saveState();
+        }
+
+        function updateGroupingUI() {
+            els.groupColumn.innerHTML = '';
+            state.headers.forEach(h => {
+                const option = document.createElement('option');
+                option.value = h;
+                option.text = h;
+                if (h === state.grouping.column) option.selected = true;
+                els.groupColumn.appendChild(option);
+            });
+        }
+
+        function applyGrouping() {
+            if (!state.grouping.enabled || !state.grouping.column || state.parsedData.length === 0) {
+                state.displayData = [...state.parsedData];
+            } else {
+                const groupMap = new Map();
+                const targetCol = state.grouping.column;
+
+                state.parsedData.forEach(row => {
+                    const key = row[targetCol] || '(未分類)';
+                    if (!groupMap.has(key)) {
+                        const initialObj = {};
+                        state.headers.forEach(h => { initialObj[h] = [row[h]]; });
+                        groupMap.set(key, initialObj);
+                    } else {
+                        const existingObj = groupMap.get(key);
+                        state.headers.forEach(h => { if (row[h]) existingObj[h].push(row[h]); });
+                    }
+                });
+
+                state.displayData = Array.from(groupMap.values()).map(groupObj => {
+                    const finalRow = {};
+                    state.headers.forEach(h => {
+                        const values = groupObj[h];
+                        let allValues = [];
+                        values.forEach(v => {
+                            if (!v) return;
+                            v.split(';').forEach(subV => {
+                                const trimV = subV.trim();
+                                if (trimV) allValues.push(trimV);
+                            });
+                        });
+
+                        const uniqueValues = [...new Set(allValues)];
+                        const hLower = h.toLowerCase();
+                        const isRecipient = hLower === 'email' || h === '收件人' || h === '信箱';
+                        const isCC = hLower.includes('cc') || h.includes('副本');
+                        const isBCC = hLower.includes('bcc') || h.includes('密件');
+
+                        if (isRecipient || (isCC && !hLower.includes('bcc') && !h.includes('密件')) || isBCC) {
+                            finalRow[h] = uniqueValues.join('; ');
+                        } else if (h === targetCol) {
+                            finalRow[h] = uniqueValues.length > 0 ? uniqueValues[0] : '';
+                        } else {
+                            const simpleUnique = [...new Set(values)];
+                            finalRow[h] = simpleUnique.join('、');
+                        }
+                    });
+                    return finalRow;
+                });
+            }
+            updateDataUI();
+        }
+
+        function handleToolbar(e, command) {
+            e.preventDefault();
+            if (command === 'createLink') {
+                saveSelection();
+                openLinkModal();
+            } else if (command === 'unlink') {
+                els.editor.focus();
+                document.execCommand('unlink', false, null);
+            } else if (command === 'removeFormat') {
+                els.editor.focus();
+                document.execCommand('removeFormat', false, null);
+                // Also clean up common span trash manually if needed
+                const sel = window.getSelection();
+                if (!sel.isCollapsed) {
+                    // Optional: Aggressive cleanup logic could go here
+                }
+            } else {
+                els.editor.focus();
+                document.execCommand(command, false, null);
+            }
+        }
+
+        function openLinkModal() {
+            els.linkUrlInput.value = '';
+            els.linkModalVariables.innerHTML = '';
+            state.headers.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = "px-2 py-1 bg-warm-bg hover:bg-white hover:text-primary border border-warm-border rounded text-xs text-warm-gray transition-colors";
+                btn.innerText = \`{\${h}}\`;
+                btn.onclick = () => addVariableToLinkInput(\`{\${h}}\`);
+                els.linkModalVariables.appendChild(btn);
+            });
+            els.linkModal.classList.remove('hidden');
+            els.linkUrlInput.focus();
+        }
+
+        function closeLinkModal() {
+            els.linkModal.classList.add('hidden');
+        }
+
+        function addVariableToLinkInput(variableStr) {
+            const input = els.linkUrlInput;
+            const startPos = input.selectionStart;
+            const endPos = input.selectionEnd;
+            const text = input.value;
+            input.value = text.substring(0, startPos) + variableStr + text.substring(endPos);
+            const newPos = startPos + variableStr.length;
+            input.setSelectionRange(newPos, newPos);
+            input.focus();
+        }
+
+        function confirmInsertLink() {
+            const url = els.linkUrlInput.value.trim();
+            closeLinkModal();
+            restoreSelection();
+            if (url) {
+                document.execCommand('createLink', false, url);
+            }
+        }
+
+        function saveSelection() {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) savedRange = sel.getRangeAt(0);
+        }
+        function restoreSelection() {
+            if (savedRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+            }
+        }
+        function closeAllMenus() {
+            document.querySelectorAll('.color-menu').forEach(menu => menu.classList.remove('open'));
+        }
+        function toggleColorMenu(e, menuId) {
+            e.preventDefault(); e.stopPropagation();
+            saveSelection();
+            const menu = document.getElementById(menuId);
+            const isOpen = menu.classList.contains('open');
+            closeAllMenus();
+            if (!isOpen) menu.classList.add('open');
+        }
+        function applyColor(e, command, value) {
+            e.preventDefault(); e.stopPropagation();
+            restoreSelection();
+            els.editor.focus();
+            document.execCommand(command, false, value);
+            state.bodyTemplate = els.editor.innerHTML;
+            saveState();
+            closeAllMenus();
+        }
+
+        function insertVariable(e, variable) {
+            e.preventDefault();
+
+            if (lastFocusedElement === els.subjectInput) {
+                const input = els.subjectInput;
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const val = input.value;
+                input.value = val.substring(0, start) + variable + val.substring(end);
+                input.selectionStart = input.selectionEnd = start + variable.length;
+                input.focus();
+
+                state.subjectTemplate = input.value;
+                saveState();
+            } else {
+                els.editor.focus();
+                document.execCommand('insertText', false, variable);
+                state.bodyTemplate = els.editor.innerHTML;
+                saveState();
+            }
+        }
+
+        function cleanHtmlLinks(htmlString) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+            const links = tempDiv.querySelectorAll('a');
+
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (!href || href.trim() === '' || href.trim() === 'http://' || href.trim() === 'https://') {
+                    while (link.firstChild) {
+                        link.parentNode.insertBefore(link.firstChild, link);
+                    }
+                    link.parentNode.removeChild(link);
+                }
+            });
+            return tempDiv.innerHTML;
+        }
+
+        function renderPreview() {
+            const bodyTemplate = els.editor.innerHTML;
+            if (state.displayData.length === 0) {
+                els.previewContainer.innerHTML = '<div class="text-center py-10 bg-warm-bg border border-dashed border-warm-border rounded-lg text-warm-gray">沒有資料，請先至「匯入資料」頁籤貼上資料。<\/div>';
+                return;
+            }
+            els.previewContainer.innerHTML = '';
+
+            state.displayData.forEach((row, index) => {
+                const finalSubject = replaceVariables(state.subjectTemplate, row);
+
+                let dynamicCC = '';
+                let dynamicBCC = '';
+                let recipientEmail = '';
+
+                Object.keys(row).forEach(k => {
+                    const kLower = k.toLowerCase();
+                    if (['email', '收件人', '信箱'].includes(kLower)) recipientEmail = row[k];
+                    if ((kLower.includes('cc') || k.includes('副本')) && !kLower.includes('bcc') && !k.includes('密件')) dynamicCC = row[k];
+                    if (kLower.includes('bcc') || k.includes('密件')) dynamicBCC = row[k];
+                });
+
+                let finalBodyHtml = replaceVariables(bodyTemplate, row);
+                finalBodyHtml = cleanHtmlLinks(finalBodyHtml);
+
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-warm-border rounded-lg shadow-sm mb-6";
+                card.id = \`card-\${index}\`;
+                card.innerHTML = \`
+                    <div class="bg-warm-bg px-4 py-2 border-b border-warm-border flex justify-between items-center">
+                        <span class="font-bold text-warm-black flex items-center gap-2">
+                            #\${index + 1}
+                            <span class="status-badge hidden text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
+                                <i data-lucide="check-circle" class="w-3 h-3 inline mr-1"><\/i>已複製
+                            <\/span>
+                        <\/span>
+                    <\/div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">收件人<\/span>
+                            <div class="flex-1 flex gap-2">
+                                <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-primary break-all">
+                                    \${recipientEmail || '<span class="text-gray-400">未填寫<\/span>'}
+                                <\/div>
+                                <button onclick="copySimpleText(this, '\${recipientEmail}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製收件人"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
+                            <\/div>
+                        <\/div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">副本<\/span>
+                            <div class="flex-1 flex gap-2">
+                                <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-warm-gray break-all">
+                                    \${dynamicCC || '<span class="text-gray-400">無<\/span>'}
+                                <\/div>
+                                <button onclick="copySimpleText(this, '\${dynamicCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製副本"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
+                            <\/div>
+                        <\/div>
+                        <div class="items-start gap-3 bcc-row">
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">密件副本<\/span>
+                            <div class="flex-1 flex gap-2">
+                                <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-warm-gray break-all">
+                                    \${dynamicBCC || '<span class="text-gray-400">無<\/span>'}
+                                <\/div>
+                                <button onclick="copySimpleText(this, '\${dynamicBCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製密件副本"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
+                            <\/div>
+                        <\/div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">主旨<\/span>
+                            <div class="flex-1 flex gap-2">
+                                <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-medium text-warm-black">
+                                    \${finalSubject}
+                                <\/div>
+                                <button onclick="copySimpleText(this, '\${finalSubject}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製主旨"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
+                            <\/div>
+                        <\/div>
+                        <div class="mt-4 pt-4 border-t border-warm-border">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-warm-gray uppercase">內文預覽<\/span>
+                                <button onclick="copyToClipboard(this, \${index})" data-content="\${encodeURIComponent(finalBodyHtml)}" class="flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary-hover transition-colors shadow-sm font-bold">
+                                    <i data-lucide="copy" class="h-4 w-4"><\/i> 複製內文 (含格式)
+                                <\/button>
+                            <\/div>
+                            <div class="p-4 bg-white border border-warm-border rounded text-sm text-warm-black leading-relaxed max-w-none email-content" style="font-family: Calibri, sans-serif; font-size: 12pt;">\${finalBodyHtml}<\/div>
+                        <\/div>
+                    <\/div>
+                \`;
+                els.previewContainer.appendChild(card);
+            });
+            updateBCCVisibility();
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+        }
+
+        function switchTab(tabName) {
+            Object.keys(els.btns).forEach(key => {
+                const btn = els.btns[key];
+                if (key === tabName) {
+                    btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-primary shadow-sm";
+                } else {
+                    btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-primary-hover text-white hover:bg-[#162e6b]";
+                }
+            });
+
+            Object.keys(els.tabs).forEach(key => {
+                const tab = els.tabs[key];
+                if (key === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            if (tabName === 'preview') {
+                renderPreview();
+            }
+        }
+
+        function replaceVariables(template, rowData) {
+            let result = template;
+            state.headers.forEach(header => {
+                const value = rowData[header] || '';
+
+                result = result.split(\`{\${header}}\`).join(value);
+
+                if (value.length > 0) {
+                    const surname = value.charAt(0);
+                    result = result.split(\`{\${header}:姓}\`).join(surname);
+                } else {
+                    result = result.split(\`{\${header}:姓}\`).join('');
+                }
+
+                let prefix = value;
+                if (value.includes('@')) {
+                    prefix = value.split('@')[0];
+                }
+                result = result.split(\`{\${header}:前}\`).join(prefix);
+
+                const encodedKey = \`%7B\${header}%7D\`;
+                result = result.split(encodedKey).join(value);
+            });
+            return result;
+        }
+
+        function copySimpleText(btn, text) {
+            if (!text) return;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = \`<i data-lucide="check" class="w-4 h-4 text-green-600"><\/i>\`;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+                setTimeout(() => {
+                    btn.innerHTML = originalIcon;
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        lucide.createIcons();
+                    }
+                }, 1500);
+            } catch (err) { alert('複製失敗'); } finally { document.body.removeChild(textarea); }
+        }
+
+        /**
+         * Helper function to convert any color string to Hex
+         * Supports: "rgb(r, g, b)", "rgba(r, g, b, 1)", and basic named colors if browser parses them.
+         */
+        function forceHexColor(colorStr) {
+            if (!colorStr) return null;
+            // Check for RGB/RGBA
+            const rgbMatch = colorStr.match(/^rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*1)?\\)$/i);
+            if (rgbMatch) {
+                const r = parseInt(rgbMatch[1]);
+                const g = parseInt(rgbMatch[2]);
+                const b = parseInt(rgbMatch[3]);
+                const toHex = (n) => { const hex = n.toString(16); return hex.length === 1 ? '0' + hex : hex; };
+                return \`#\${toHex(r)}\${toHex(g)}\${toHex(b)}\`;
+            }
+            // If it's already hex, return it
+            if (colorStr.startsWith('#')) return colorStr;
+            // If it's a named color (rarely returned by style object in modern browsers unless explicitly set), 
+            // we leave it as is, Outlook usually handles standard names (red, blue) ok, but Hex is best.
+            // But usually browsers convert named to RGB in computed style.
+            return colorStr;
+        }
+
+        function copyToClipboard(btn, index) {
+            const rawHtml = decodeURIComponent(btn.getAttribute('data-content'));
+            const processor = document.createElement('div');
+            processor.innerHTML = rawHtml;
+            const fontFamily = "'Calibri', sans-serif";
+            const fontSize = "12pt";
+            const defaultColor = "#000000";
+
+            const allElements = processor.querySelectorAll('*');
+
+            // --- CLEANING PASS: WHITELIST REBUILD ---
+            // Iterate all elements and aggressively rebuild their style attributes
+            // to strip all --tw-* variables and other noise.
+            allElements.forEach(el => {
+                const computedStyle = el.style; // Access the inline style object directly
+                const newStyles = [];
+                let hasBg = false;
+
+                // 1. Extract Core Properties
+                // We manually check the inline style properties we care about
+                const targetProps = [
+                    'color',
+                    'background-color',
+                    'font-weight',
+                    'font-style',
+                    'text-decoration',
+                    'text-align',
+                    'vertical-align'
+                ];
+
+                targetProps.forEach(prop => {
+                    let val = computedStyle.getPropertyValue(prop);
+                    if (val && val !== 'initial' && val !== 'inherit' && val !== 'transparent' && val !== 'rgba(0, 0, 0, 0)') {
+
+                        // Fix Colors to Hex
+                        if (prop.includes('color')) {
+                            const hex = forceHexColor(val);
+                            if (hex) val = hex;
+                        }
+
+                        // Special Handling for Background
+                        if (prop === 'background-color') {
+                            hasBg = true;
+                            // Add background shorthand for Outlook safety
+                            newStyles.push(\`background: \${val}\`);
+                        }
+
+                        newStyles.push(\`\${prop}: \${val}\`);
+                    }
+                });
+
+                // 2. Add MSO Highlight (The Nuclear Fix)
+                // If we detected a background color, we force an mso-highlight property.
+                if (hasBg) {
+                    // Try to match standard colors, otherwise default to yellow or just let shading handle it
+                    const bgVal = forceHexColor(computedStyle.backgroundColor)?.toUpperCase();
+                    let msoName = 'yellow'; // Default fallback
+
+                    if (bgVal === '#FFFF00') msoName = 'yellow';
+                    else if (bgVal === '#00FF00' || bgVal === '#008000') msoName = 'lime';
+                    else if (bgVal === '#00FFFF') msoName = 'cyan';
+                    else if (bgVal === '#FF00FF') msoName = 'magenta';
+                    else if (bgVal === '#0000FF') msoName = 'blue';
+                    else if (bgVal === '#FF0000') msoName = 'red';
+                    else if (bgVal === '#000000') msoName = 'black';
+                    else if (bgVal === '#D1D5DB' || bgVal === '#C0C0C0') msoName = 'gray-25';
+
+                    // Inject mso-highlight. This tells Word/Outlook "This is a highlighter pen"
+                    newStyles.push(\`mso-highlight: \${msoName}\`);
+                }
+
+                // 3. FORCE Font Uniformity (Override everything else)
+                newStyles.push(\`font-family: \${fontFamily}\`);
+                newStyles.push(\`font-size: \${fontSize}\`);
+
+                // 4. Handle Tag-Specific Styles (Re-apply semantic styles)
+                if (['B', 'STRONG'].includes(el.tagName)) newStyles.push('font-weight: bold');
+                if (['I', 'EM'].includes(el.tagName)) newStyles.push('font-style: italic');
+                if (['U'].includes(el.tagName)) newStyles.push('text-decoration: underline');
+                if (el.tagName === 'A') {
+                    newStyles.push('color: blue');
+                    newStyles.push('text-decoration: underline');
+                }
+                if (['UL', 'OL'].includes(el.tagName)) {
+                    newStyles.push('margin-left: 24px');
+                    newStyles.push('padding-left: 0');
+                }
+                if (el.tagName === 'LI') {
+                    newStyles.push('margin-bottom: 4px');
+                }
+
+                // 5. REPLACE the entire style attribute
+                // This strips out all the --tw-* garbage and keeps only what we just built
+                if (newStyles.length > 0) {
+                    el.setAttribute('style', newStyles.join('; '));
+                } else {
+                    el.removeAttribute('style');
+                }
+            });
+
+            // Wrap in a div that enforces global font/color for the paste operation
+            const finalHtml = \`<div style="font-family: \${fontFamily}; font-size: \${fontSize}; color: \${defaultColor};">\${processor.innerHTML}<\/div>\`;
+            const plainText = processor.innerText || processor.textContent;
+
+            const listener = (e) => {
+                e.preventDefault();
+                e.clipboardData.setData('text/html', finalHtml);
+                e.clipboardData.setData('text/plain', plainText);
+            };
+            document.addEventListener('copy', listener);
+            try {
+                const successful = document.execCommand('copy');
+                document.removeEventListener('copy', listener);
+                if (successful) {
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = \`<i data-lucide="check" class="h-4 w-4"><\/i> 已複製\`;
+                    btn.classList.remove('bg-primary', 'hover:bg-primary-hover');
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700');
+
+                    const card = document.getElementById(\`card-\${index}\`);
+                    if (card) {
+                        card.classList.add('card-copied');
+                    }
+
+                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                        lucide.createIcons();
+                    }
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.classList.add('bg-primary', 'hover:bg-primary-hover');
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                            lucide.createIcons();
+                        }
+                    }, 2000);
+                } else { alert("複製失敗"); }
+            } catch (err) {
+                document.removeEventListener('copy', listener);
+                alert("瀏覽器不支援，請手動複製");
+            }
+        }
+
+        window.switchTab = switchTab;
+        window.clearData = clearData;
+        window.clearTemplate = clearTemplate;
+        window.toggleGrouping = toggleGrouping;
+        window.updateGroupingColumn = updateGroupingColumn;
+        window.toggleBCC = toggleBCC;
+        window.handleToolbar = handleToolbar;
+        window.toggleColorMenu = toggleColorMenu;
+        window.applyColor = applyColor;
+        window.insertVariable = insertVariable;
+        window.copyToClipboard = copyToClipboard;
+        window.copySimpleText = copySimpleText;
+
+        window.openLinkModal = openLinkModal;
+        window.closeLinkModal = closeLinkModal;
+        window.confirmInsertLink = confirmInsertLink;
+        window.addVariableToLinkInput = addVariableToLinkInput;
+
+        // Initialize safely
+        init();
+    <\/script>
+<\/body>
+
+<\/html>
+`
+  };
+
+  function loadFrame(id) {
+    if (loaded[id]) return;
+    loaded[id] = true;
+    var iframe = document.getElementById('frame-' + id);
+    var loader = document.getElementById('loader-' + id);
+    var blob = new Blob([contents[id]], { type: 'text/html; charset=utf-8' });
+    iframe.onload = function() {
+      if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(function() { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 400);
+      }
+    };
+    iframe.src = URL.createObjectURL(blob);
+  }
+
+  function switchTab(id) {
+    TABS.forEach(function(t) {
+      document.querySelector('[data-tab="' + t + '"]').classList.toggle('active', t === id);
+      document.getElementById('frame-' + t).classList.toggle('active', t === id);
+      var loader = document.getElementById('loader-' + t);
+      if (loader) loader.classList.toggle('hidden', t !== id);
+    });
+    loadFrame(id);
+  }
+
+  loadFrame('taica');
+</script>
+</body>
+</html>
