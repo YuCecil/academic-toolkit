@@ -2892,6 +2892,9 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
     /* Section divider */
     .sec-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
+    /* Ensure Tailwind hidden class always wins over inline styles */
+    .hidden { display: none !important; }
+
     /* Responsive */
     @media (max-width: 600px) {
       body { padding: 12px 10px 40px; }
