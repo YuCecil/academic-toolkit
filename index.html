@@ -215,7 +215,7 @@
         href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>TAICA查詢系統<\/title>
+    <title>TAICA查詢系統</title>
 
     <style>
         :root {
@@ -1046,8 +1046,8 @@
             border-radius: 8px;
             color: var(--t3);
         }
-    <\/style>
-<\/head>
+    </style>
+</head>
 
 <body class="flex flex-col no-select">
     <div id="app" class="flex flex-col">
@@ -1056,25 +1056,25 @@
         <header class="hdr">
             <div class="hdr-inner">
                 <div class="logo-wrap">
-                    <span class="logo-taica">TAICA<\/span>
-                    <div class="logo-sep"><\/div>
-                    <span class="logo-cn">課程連結查詢系統<\/span>
-                <\/div>
+                    <span class="logo-taica">TAICA</span>
+                    <div class="logo-sep"></div>
+                    <span class="logo-cn">課程連結查詢系統</span>
+                </div>
                 <div class="hdr-search-wrap">
-                    <i class="fa-solid fa-magnifying-glass hdr-search-icon"><\/i>
+                    <i class="fa-solid fa-magnifying-glass hdr-search-icon"></i>
                     <input v-model="searchKeyword" type="text" placeholder="搜尋學校名稱…" class="hdr-search" @keydown.stop @focus="searchKeyword = ''">
-                <\/div>
-            <\/div>
-        <\/header>
+                </div>
+            </div>
+        </header>
 
         <!-- ── LOADING ── -->
         <div v-if="loading"
             style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-            <div class="spin-ring"><\/div>
-            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);">載入資料中…<\/p>
+            <div class="spin-ring"></div>
+            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);">載入資料中…</p>
             <p v-if="useMockData" style="font-size:10px;color:var(--amber);font-family:'IBM Plex Mono',monospace;">[
-                test mode ]<\/p>
-        <\/div>
+                test mode ]</p>
+        </div>
 
         <!-- ── MAIN ── -->
         <div v-else class="main-wrap">
@@ -1084,122 +1084,122 @@
 
                 <!-- Type filter -->
                 <div class="panel" style="padding:11px;flex-shrink:0;">
-                    <span class="s-label" style="margin-bottom:7px;display:block;">課程類型<\/span>
+                    <span class="s-label" style="margin-bottom:7px;display:block;">課程類型</span>
                     <div style="display:flex;flex-wrap:wrap;gap:5px;">
                         <button v-for="type in courseTypes" @click="selectType(type)"
                             :class="['type-pill', selectedType === type ? 'on' : '']">
                             {{ type }}
-                        <\/button>
-                    <\/div>
-                <\/div>
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Course list -->
                 <div class="panel" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
                     <div style="padding:9px 13px 7px;border-bottom:1px solid var(--border);flex-shrink:0;">
-                        <span class="s-label">選擇課程<\/span>
-                    <\/div>
+                        <span class="s-label">選擇課程</span>
+                    </div>
                     <div class="cscroll" style="overflow-y:auto;flex:1;">
                         <div v-if="filteredCourses.length === 0"
                             style="padding:18px;text-align:center;font-size:11px;color:var(--t3);font-family:'IBM Plex Mono',monospace;">
                             // empty
-                        <\/div>
+                        </div>
                         <button v-for="course in filteredCourses" @click="selectCourse(course)"
                             :class="['ci', selectedCourse?.id === course.id ? 'on' : '']">
-                            <div class="ci-name">{{ course.name }}<\/div>
-                            <div class="ci-type">{{ course.type }}<\/div>
-                        <\/button>
-                    <\/div>
-                <\/div>
+                            <div class="ci-name">{{ course.name }}</div>
+                            <div class="ci-type">{{ course.type }}</div>
+                        </button>
+                    </div>
+                </div>
 
                 <!-- General links -->
                 <div class="panel"
                     style="flex-shrink:0;overflow:hidden;display:flex;flex-direction:column;max-height:32vh;">
                     <div style="padding:8px 11px 6px;border-bottom:1px solid var(--border);flex-shrink:0;">
-                        <span class="s-label">常用資源<\/span>
-                    <\/div>
+                        <span class="s-label">常用資源</span>
+                    </div>
                     <div class="cscroll" style="overflow-y:auto;flex:1;padding:5px 8px 7px;">
                         <div style="display:flex;flex-direction:column;gap:1px;">
                             <a v-for="link in generalLinks" :key="link.name" :href="link.url" target="_blank"
                                 @contextmenu.prevent="handleRightClickCopy(link.url)" class="gen-a" title="左鍵開啟，右鍵複製連結">
                                 <i :class="[link.icon]"
-                                    style="width:13px;text-align:center;flex-shrink:0;font-size:10px;color:var(--t3);"><\/i>
+                                    style="width:13px;text-align:center;flex-shrink:0;font-size:10px;color:var(--t3);"></i>
                                 <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{
-                                    link.name }}<\/span>
-                                <i class="fa-solid fa-arrow-up-right-from-square gen-arrow"><\/i>
-                            <\/a>
-                        <\/div>
-                    <\/div>
-                <\/div>
+                                    link.name }}</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square gen-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-            <\/aside>
+            </aside>
 
             <!-- Content -->
             <section class="content-col">
 
                 <!-- Bulk open actions -->
                 <div class="panel" style="padding:9px 13px;flex-shrink:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span class="s-label" style="white-space:nowrap;">批量開啟<\/span>
-                    <div style="width:1px;height:14px;background:var(--border2);"><\/div>
+                    <span class="s-label" style="white-space:nowrap;">批量開啟</span>
+                    <div style="width:1px;height:14px;background:var(--border2);"></div>
                     <button @click="openAllMainCool" style="display:flex;align-items:center;gap:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(42,79,170,.22);font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .14s;">
-                        <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>所有主導課程
-                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allMainCoolUrls.length }}<\/span>
-                    <\/button>
+                        <i class="fa-solid fa-graduation-cap" style="font-size:9px;"></i>所有主導課程
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allMainCoolUrls.length }}</span>
+                    </button>
                     <button @click="openAllRosters" style="display:flex;align-items:center;gap:6px;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(194,65,40,.22);font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .14s;">
-                        <i class="fa-regular fa-folder-open" style="font-size:9px;"><\/i>所有名單總表
-                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allRosterUrls.length }}<\/span>
-                    <\/button>
-                <\/div>
+                        <i class="fa-regular fa-folder-open" style="font-size:9px;"></i>所有名單總表
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:.6;">{{ allRosterUrls.length }}</span>
+                    </button>
+                </div>
 
                 <div v-if="!selectedCourse" class="empty-pane">
-                    <i class="fa-regular fa-hand-point-left" style="font-size:26px;"><\/i>
-                    <p style="font-size:12px;color:var(--t2);">請從左側選擇課程<\/p>
-                <\/div>
+                    <i class="fa-regular fa-hand-point-left" style="font-size:26px;"></i>
+                    <p style="font-size:12px;color:var(--t2);">請從左側選擇課程</p>
+                </div>
 
                 <div v-else style="display:flex;flex-direction:column;height:100%;gap:8px;">
 
                     <!-- Course header -->
                     <div class="course-hdr">
-                        <div class="course-tag">{{ selectedCourse.type }}<\/div>
-                        <h2 class="course-name-text">{{ selectedCourse.name }}<\/h2>
+                        <div class="course-tag">{{ selectedCourse.type }}</div>
+                        <h2 class="course-name-text">{{ selectedCourse.name }}</h2>
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:7px;">
                             <a v-for="link in selectedCourse.globalLinks" :href="link.url" target="_blank"
                                 @contextmenu.prevent="handleRightClickCopy(link.url)" class="glink-card"
                                 title="左鍵開啟，右鍵複製">
-                                <div class="glink-icon"><i class="fa-solid fa-star" style="font-size:11px;"><\/i><\/div>
+                                <div class="glink-icon"><i class="fa-solid fa-star" style="font-size:11px;"></i></div>
                                 <div style="flex:1;min-width:0;">
                                     <div
                                         style="font-weight:700;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                                        {{ link.name }}<\/div>
+                                        {{ link.name }}</div>
                                     <div
                                         style="font-size:9px;opacity:.5;margin-top:1px;font-family:'IBM Plex Mono',monospace;">
-                                        右鍵複製連結<\/div>
-                                <\/div>
+                                        右鍵複製連結</div>
+                                </div>
                                 <i class="fa-solid fa-external-link-alt"
-                                    style="font-size:9px;opacity:.35;margin-left:8px;flex-shrink:0;"><\/i>
-                            <\/a>
-                        <\/div>
-                    <\/div>
+                                    style="font-size:9px;opacity:.35;margin-left:8px;flex-shrink:0;"></i>
+                            </a>
+                        </div>
+                    </div>
 
                     <!-- Toolbar -->
                     <div
                         style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;">
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="font-size:11px;font-weight:700;color:var(--t2);">各校連結<\/span>
+                            <span style="font-size:11px;font-weight:700;color:var(--t2);">各校連結</span>
                             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);">({{
-                                filteredSchools.length }})<\/span>
+                                filteredSchools.length }})</span>
                             <span v-if="searchKeyword" style="font-size:10px;color:var(--red);">
-                                <i class="fa-solid fa-filter" style="font-size:9px;"><\/i> "{{ searchKeyword }}"
-                            <\/span>
-                        <\/div>
+                                <i class="fa-solid fa-filter" style="font-size:9px;"></i> "{{ searchKeyword }}"
+                            </span>
+                        </div>
                         <div v-if="filteredSchools.length > 0" class="view-sw">
                             <button @click="viewMode = 'card'" :class="['vbtn', viewMode==='card' ? 'vcard' : '']">
-                                <i class="fa-solid fa-grid-2" style="font-size:10px;"><\/i>卡片
-                            <\/button>
+                                <i class="fa-solid fa-grid-2" style="font-size:10px;"></i>卡片
+                            </button>
                             <button @click="viewMode = 'table'" :class="['vbtn', viewMode==='table' ? 'vtable' : '']">
-                                <i class="fa-solid fa-table-list" style="font-size:10px;"><\/i>批量複製
-                            <\/button>
-                        <\/div>
-                    <\/div>
+                                <i class="fa-solid fa-table-list" style="font-size:10px;"></i>批量複製
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Data area -->
                     <div
@@ -1207,9 +1207,9 @@
 
                         <div v-if="filteredSchools.length === 0"
                             style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3);">
-                            <i class="fa-solid fa-inbox" style="font-size:22px;"><\/i>
-                            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;">// no results<\/p>
-                        <\/div>
+                            <i class="fa-solid fa-inbox" style="font-size:22px;"></i>
+                            <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;">// no results</p>
+                        </div>
 
                         <!-- Card view -->
                         <div v-else-if="viewMode === 'card'"
@@ -1220,19 +1220,19 @@
                                     <!-- Group header for twoStep -->
                                     <div v-if="selectedCourse?.twoStep && (idx === 0 || item.role !== filteredSchools[idx-1].role)"
                                         :style="'grid-column:1/-1;border-radius:7px;padding:9px 14px;display:flex;align-items:center;gap:10px;' + (idx > 0 ? 'margin-top:6px;' : '') + (item.role==='清大組' ? 'background:var(--purple-dim);border:1px solid rgba(26,107,116,.22);' : 'background:var(--green-dim);border:1px solid rgba(79,118,32,.22);')">
-                                        <span style="font-size:13px;font-weight:700;white-space:nowrap;" :style="item.role==='清大組'?'color:var(--purple)':'color:var(--green)'">{{ item.role }}<\/span>
-                                        <span style="font-size:11px;color:var(--t2);">{{ item.role === '清大組' ? '以學生身分加入清大課程頁面，以旁聽生身分加入主導課程' : '以學生身分加入本校衛星課程頁面，以旁聽生身分加入主導課程' }}<\/span>
-                                    <\/div>
+                                        <span style="font-size:13px;font-weight:700;white-space:nowrap;" :style="item.role==='清大組'?'color:var(--purple)':'color:var(--green)'">{{ item.role }}</span>
+                                        <span style="font-size:11px;color:var(--t2);">{{ item.role === '清大組' ? '以學生身分加入清大課程頁面，以旁聽生身分加入主導課程' : '以學生身分加入本校衛星課程頁面，以旁聽生身分加入主導課程' }}</span>
+                                    </div>
                                     <div :class="['scard', item.isHost ? 'is-host' : '']">
                                         <div class="scard-div">
                                             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                                                <span style="font-size:12px;font-weight:700;color:var(--t1);">{{ item.school }}<\/span>
+                                                <span style="font-size:12px;font-weight:700;color:var(--t1);">{{ item.school }}</span>
                                                 <span v-if="item.isHost" class="bdg bdg-host">
-                                                    <i class="fa-solid fa-crown" style="font-size:8px;"><\/i>開課
-                                                <\/span>
-                                            <\/div>
-                                            <span :class="['bdg', (item.role==='鏡像'||item.role==='清大組') ? 'bdg-mirror' : 'bdg-sat']">{{ item.role }}<\/span>
-                                        <\/div>
+                                                    <i class="fa-solid fa-crown" style="font-size:8px;"></i>開課
+                                                </span>
+                                            </div>
+                                            <span :class="['bdg', (item.role==='鏡像'||item.role==='清大組') ? 'bdg-mirror' : 'bdg-sat']">{{ item.role }}</span>
+                                        </div>
                                         <div style="display:flex;flex-direction:column;gap:2px;">
                                             <a v-for="link in item.links.filter(l => l.type !== 'cool_main')"
                                                 :href="link.disabled ? null : link.url"
@@ -1242,120 +1242,120 @@
                                                 @contextmenu.prevent="!link.disabled && handleRightClickCopy(link.url)"
                                                 :title="link.disabled ? '無效連結' : '左鍵開啟，右鍵複製'">
                                                 <i v-if="link.type==='folder'" class="fa-regular fa-folder-open li-ic"
-                                                    :style="link.disabled?'color:var(--t3)':'color:var(--amber)'"><\/i>
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--amber)'"></i>
                                                 <i v-else-if="link.type==='sheet'" class="fa-solid fa-table li-ic"
-                                                    :style="link.disabled?'color:var(--t3)':'color:var(--green)'"><\/i>
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--green)'"></i>
                                                 <i v-else-if="link.type==='cool'" class="fa-solid fa-graduation-cap li-ic"
-                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"><\/i>
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"></i>
                                                 <i v-else-if="link.type==='cool_student'" class="fa-solid fa-graduation-cap li-ic"
-                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"><\/i>
-                                                <i v-else class="fa-solid fa-link li-ic" style="color:var(--t3);"><\/i>
+                                                    :style="link.disabled?'color:var(--t3)':'color:var(--cyan)'"></i>
+                                                <i v-else class="fa-solid fa-link li-ic" style="color:var(--t3);"></i>
                                                 <span
                                                     style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{
-                                                    link.label }}<\/span>
-                                                <i v-if="!link.disabled" class="fa-solid fa-chevron-right li-chev"><\/i>
-                                            <\/a>
-                                        <\/div>
-                                    <\/div>
-                                <\/template>
-                            <\/div>
-                        <\/div>
+                                                    link.label }}</span>
+                                                <i v-if="!link.disabled" class="fa-solid fa-chevron-right li-chev"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
 
                         <!-- Table view -->
                         <div v-else style="display:flex;flex-direction:column;">
                             <div class="tbl-ctrl" style="flex-direction:column;align-items:stretch;gap:0;">
                                 <!-- 第一列：TARGET + PAGE + 複製按鈕 -->
                                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;">TARGET<\/span>
+                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;">TARGET</span>
                                     <div class="tgt-grp">
                                         <template v-if="selectedCourse?.twoStep">
                                             <button @click="setTableTarget('cool_student')" :class="['tgt-btn', tableTarget==='cool_student'?'tc':'']">
-                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>課程頁面
-                                            <\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
-                                        <\/template>
+                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"></i>課程頁面
+                                            </button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
+                                        </template>
                                         <template v-else-if="selectedCourse?.type !== '鏡像課程'">
                                             <button @click="setTableTarget('cool')" :class="['tgt-btn', tableTarget==='cool'?'tc':'']">
-                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"><\/i>COOL
-                                            <\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
-                                        <\/template>
+                                                <i class="fa-solid fa-graduation-cap" style="font-size:9px;"></i>COOL
+                                            </button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
+                                        </template>
                                         <button @click="setTableTarget('folder')" :class="['tgt-btn', tableTarget==='folder'?'tf':'']">
-                                            <i class="fa-regular fa-folder-open" style="font-size:9px;"><\/i>資料夾
-                                        <\/button>
-                                        <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                            <i class="fa-regular fa-folder-open" style="font-size:9px;"></i>資料夾
+                                        </button>
+                                        <div style="width:1px;background:var(--border);margin:2px 0;"></div>
                                         <button @click="setTableTarget('sheet')" :class="['tgt-btn', tableTarget==='sheet'?'ts':'']">
-                                            <i class="fa-solid fa-table" style="font-size:9px;"><\/i>分頁
-                                        <\/button>
-                                    <\/div>
+                                            <i class="fa-solid fa-table" style="font-size:9px;"></i>分頁
+                                        </button>
+                                    </div>
                                     <template v-if="tableTarget === 'cool' || tableTarget === 'cool_main' || tableTarget === 'cool_student'">
-                                        <div style="width:1px;height:18px;background:var(--border2);flex-shrink:0;"><\/div>
-                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">PAGE<\/span>
+                                        <div style="width:1px;height:18px;background:var(--border2);flex-shrink:0;"></div>
+                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">PAGE</span>
                                         <div class="tgt-grp">
-                                            <button @click="coolSuffix = ''" :class="['tgt-btn', coolSuffix===''?'tc':'']"><i class="fa-solid fa-house" style="font-size:9px;"><\/i>首頁<\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
-                                            <button @click="coolSuffix = '/users'" :class="['tgt-btn', coolSuffix==='/users'?'tc':'']"><i class="fa-solid fa-users" style="font-size:9px;"><\/i>成員<\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
-                                            <button @click="coolSuffix = '/assignments'" :class="['tgt-btn', coolSuffix==='/assignments'?'tc':'']"><i class="fa-solid fa-clipboard-list" style="font-size:9px;"><\/i>作業<\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
-                                            <button @click="coolSuffix = '/settings'" :class="['tgt-btn', coolSuffix==='/settings'?'tc':'']"><i class="fa-solid fa-gear" style="font-size:9px;"><\/i>設定<\/button>
-                                        <\/div>
-                                    <\/template>
-                                    <div style="flex:1;"><\/div>
+                                            <button @click="coolSuffix = ''" :class="['tgt-btn', coolSuffix===''?'tc':'']"><i class="fa-solid fa-house" style="font-size:9px;"></i>首頁</button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
+                                            <button @click="coolSuffix = '/users'" :class="['tgt-btn', coolSuffix==='/users'?'tc':'']"><i class="fa-solid fa-users" style="font-size:9px;"></i>成員</button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
+                                            <button @click="coolSuffix = '/assignments'" :class="['tgt-btn', coolSuffix==='/assignments'?'tc':'']"><i class="fa-solid fa-clipboard-list" style="font-size:9px;"></i>作業</button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
+                                            <button @click="coolSuffix = '/settings'" :class="['tgt-btn', coolSuffix==='/settings'?'tc':'']"><i class="fa-solid fa-gear" style="font-size:9px;"></i>設定</button>
+                                        </div>
+                                    </template>
+                                    <div style="flex:1;"></div>
                                     <div :style="consolidatedUrl ? 'visibility:hidden;pointer-events:none' : ''" style="display:flex;align-items:center;gap:8px;">
-                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);">drag · shift · ctrl+c<\/span>
-                                        <span v-if="tableSelection.size > 0" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;background:var(--cyan-dim);padding:3px 9px;border-radius:4px;border:1px solid rgba(42,79,170,.28);color:var(--cyan);">{{ tableSelection.size }} selected<\/span>
+                                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);">drag · shift · ctrl+c</span>
+                                        <span v-if="tableSelection.size > 0" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;background:var(--cyan-dim);padding:3px 9px;border-radius:4px;border:1px solid rgba(42,79,170,.28);color:var(--cyan);">{{ tableSelection.size }} selected</span>
                                         <button @click="copyAllLinks" class="copy-all-btn">
-                                            <i class="fa-regular fa-copy"><\/i>全部複製 ({{ filteredSchools.length }})
-                                        <\/button>
-                                    <\/div>
-                                <\/div>
+                                            <i class="fa-regular fa-copy"></i>全部複製 ({{ filteredSchools.length }})
+                                        </button>
+                                    </div>
+                                </div>
                                 <!-- 第二列：ROLE（獨立一行，避免換行跳動）-->
                                 <div v-if="selectedCourse?.type === '混合課程' || selectedCourse?.twoStep"
                                     style="display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);margin-top:7px;padding-top:7px;">
-                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">ROLE<\/span>
+                                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;">ROLE</span>
                                     <div class="tgt-grp">
-                                        <button @click="setRoleFilter('全部')" :class="['tgt-btn', roleFilter==='全部'?'tc':'']">全部<\/button>
-                                        <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                        <button @click="setRoleFilter('全部')" :class="['tgt-btn', roleFilter==='全部'?'tc':'']">全部</button>
+                                        <div style="width:1px;background:var(--border);margin:2px 0;"></div>
                                         <template v-if="selectedCourse?.twoStep">
                                             <button @click="setRoleFilter('清大組')" :class="['tgt-btn', roleFilter==='清大組'?'tm':'']">
-                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"><\/i>清大組
-                                            <\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"></i>清大組
+                                            </button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
                                             <button @click="setRoleFilter('各校組')" :class="['tgt-btn', roleFilter==='各校組'?'ts':'']">
-                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"><\/i>各校組
-                                            <\/button>
-                                        <\/template>
+                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"></i>各校組
+                                            </button>
+                                        </template>
                                         <template v-else>
                                             <button @click="setRoleFilter('鏡像')" :class="['tgt-btn', roleFilter==='鏡像'?'tm':'']">
-                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"><\/i>鏡像
-                                            <\/button>
-                                            <div style="width:1px;background:var(--border);margin:2px 0;"><\/div>
+                                                <i class="fa-solid fa-circle-half-stroke" style="font-size:9px;"></i>鏡像
+                                            </button>
+                                            <div style="width:1px;background:var(--border);margin:2px 0;"></div>
                                             <button @click="setRoleFilter('衛星')" :class="['tgt-btn', roleFilter==='衛星'?'ts':'']">
-                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"><\/i>衛星
-                                            <\/button>
-                                        <\/template>
-                                    <\/div>
-                                <\/div>
-                            <\/div>
+                                                <i class="fa-solid fa-satellite-dish" style="font-size:9px;"></i>衛星
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- 合併檢視：所有學校共用同一連結時顯示 -->
                             <div v-if="consolidatedUrl" style="padding:22px 24px;display:flex;flex-direction:column;gap:14px;">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <i class="fa-solid fa-graduation-cap" style="color:var(--cyan);font-size:13px;"><\/i>
-                                    <span style="font-weight:700;font-size:13px;color:var(--t1);">{{ filteredSchools.length }} 所學校共用同一課程頁面連結<\/span>
-                                <\/div>
-                                <a :href="consolidatedUrl" target="_blank" @dblclick.prevent="() => window.open(consolidatedUrl, '_blank')" @contextmenu.prevent="handleRightClickCopy(consolidatedUrl)" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(42,79,170,.18);padding:10px 14px;border-radius:6px;word-break:break-all;display:block;text-decoration:none;cursor:pointer;" title="單擊開啟，右鍵複製">{{ consolidatedUrl }}<\/a>
+                                    <i class="fa-solid fa-graduation-cap" style="color:var(--cyan);font-size:13px;"></i>
+                                    <span style="font-weight:700;font-size:13px;color:var(--t1);">{{ filteredSchools.length }} 所學校共用同一課程頁面連結</span>
+                                </div>
+                                <a :href="consolidatedUrl" target="_blank" @dblclick.prevent="() => window.open(consolidatedUrl, '_blank')" @contextmenu.prevent="handleRightClickCopy(consolidatedUrl)" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(42,79,170,.18);padding:10px 14px;border-radius:6px;word-break:break-all;display:block;text-decoration:none;cursor:pointer;" title="單擊開啟，右鍵複製">{{ consolidatedUrl }}</a>
                                 <button @click="copyToClipboard(consolidatedUrl, 1, true)" style="align-self:flex-start;display:flex;align-items:center;gap:7px;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(42,79,170,.28);font-size:12px;font-weight:600;padding:7px 16px;border-radius:6px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;">
-                                    <i class="fa-regular fa-copy"><\/i>複製連結
-                                <\/button>
+                                    <i class="fa-regular fa-copy"></i>複製連結
+                                </button>
                                 <div style="border-top:1px solid var(--border);padding-top:12px;">
-                                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:7px;letter-spacing:.08em;">SCHOOLS<\/div>
+                                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:7px;letter-spacing:.08em;">SCHOOLS</div>
                                     <div style="display:flex;flex-wrap:wrap;gap:5px;">
-                                        <span v-for="item in filteredSchools" :key="item.school" style="font-size:11px;padding:3px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--t2);">{{ item.school }}<\/span>
-                                    <\/div>
-                                <\/div>
-                            <\/div>
+                                        <span v-for="item in filteredSchools" :key="item.school" style="font-size:11px;padding:3px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--t2);">{{ item.school }}</span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- 一般表格 -->
                             <div v-else ref="tableContainer" class="cscroll" style="overflow:auto;max-height:70vh;">
@@ -1367,24 +1367,24 @@
                                                     :indeterminate.prop="someSelected" @change="toggleSelectAll"
                                                     @mousedown.stop
                                                     style="cursor:pointer;accent-color:var(--cyan);width:13px;height:13px;vertical-align:middle;">
-                                            <\/th>
-                                            <th style="width:32%;">學校<\/th>
+                                            </th>
+                                            <th style="width:32%;">學校</th>
                                             <th>
                                                 <span v-if="tableTarget==='cool'"><i class="fa-solid fa-graduation-cap"
-                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"><\/i>COOL<\/span>
+                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"></i>COOL</span>
                                                 <span v-else-if="tableTarget==='cool_main'"><i class="fa-solid fa-graduation-cap"
-                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"><\/i>主導課程（旁聽生）<\/span>
+                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"></i>主導課程（旁聽生）</span>
                                                 <span v-else-if="tableTarget==='cool_student'"><i class="fa-solid fa-graduation-cap"
-                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"><\/i>課程頁面（學生）<\/span>
+                                                        style="color:var(--cyan);margin-right:4px;font-size:9px;"></i>課程頁面（學生）</span>
                                                 <span v-else-if="tableTarget==='folder'"><i
                                                         class="fa-regular fa-folder-open"
-                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"><\/i>資料夾<\/span>
+                                                        style="color:var(--amber);margin-right:4px;font-size:9px;"></i>資料夾</span>
                                                 <span v-else><i class="fa-solid fa-table"
-                                                        style="color:var(--green);margin-right:4px;font-size:9px;"><\/i>分頁<\/span>
-                                                <span style="color:var(--t3);">/ url<\/span>
-                                            <\/th>
-                                        <\/tr>
-                                    <\/thead>
+                                                        style="color:var(--green);margin-right:4px;font-size:9px;"></i>分頁</span>
+                                                <span style="color:var(--t3);">/ url</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         <tr v-for="(item, index) in filteredSchools" :key="item.school"
                                             :data-idx="index"
@@ -1394,17 +1394,17 @@
                                             :class="[isRowSelected(index)?'tr-on':'', getTargetLink(item)?.disabled?'tr-off':'']">
                                             <td
                                                 style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);">
-                                                {{ index+1 }}<\/td>
+                                                {{ index+1 }}</td>
                                             <td>
                                                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
                                                     <span style="font-weight:600;font-size:12px;"
                                                         :style="isRowSelected(index)?'color:var(--cyan)':'color:var(--t1)'">{{
-                                                        item.school }}<\/span>
-                                                    <span v-if="item.isHost" class="bdg bdg-host">開課<\/span>
+                                                        item.school }}</span>
+                                                    <span v-if="item.isHost" class="bdg bdg-host">開課</span>
                                                     <span :class="['bdg', (item.role==='鏡像'||item.role==='清大組')?'bdg-mirror':'bdg-sat']">{{
-                                                        item.role }}<\/span>
-                                                <\/div>
-                                            <\/td>
+                                                        item.role }}</span>
+                                                </div>
+                                            </td>
                                             <td style="position:relative;" class="group">
                                                 <template v-if="getTargetLink(item)">
                                                     <span
@@ -1412,52 +1412,52 @@
                                                         :style="isRowSelected(index)?'color:var(--cyan)':'color:var(--t3)'">
                                                         {{ getTargetLink(item).disabled ? '— 無有效連結 —' :
                                                         getTargetLink(item).url + (['cool','cool_main','cool_student'].includes(tableTarget) ? coolSuffix : '') }}
-                                                    <\/span>
+                                                    </span>
                                                     <a v-if="!getTargetLink(item).disabled"
                                                         :href="getTargetLink(item).url + (['cool','cool_main','cool_student'].includes(tableTarget) ? coolSuffix : '')" target="_blank" class="row-open"
                                                         title="在新分頁開啟" @mousedown.stop>
-                                                        <i class="fa-solid fa-external-link-alt"><\/i>
-                                                    <\/a>
-                                                <\/template>
+                                                        <i class="fa-solid fa-external-link-alt"></i>
+                                                    </a>
+                                                </template>
                                                 <span v-else
-                                                    style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);display:block;">—<\/span>
-                                            <\/td>
-                                        <\/tr>
-                                    <\/tbody>
-                                <\/table>
-                            <\/div>
-                        <\/div>
+                                                    style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t3);display:block;">—</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                    <\/div>
-                <\/div>
-            <\/section>
+                    </div>
+                </div>
+            </section>
 
-        <\/div><!-- /main-wrap -->
+        </div><!-- /main-wrap -->
 
         <!-- Float copy / open -->
         <transition name="toast">
             <div v-if="viewMode==='table' && tableSelection.size > 0" class="fcopy-group">
                 <div class="fcopy" @click="copyTableSelection">
-                    <i class="fa-regular fa-copy" style="font-size:13px;"><\/i>
-                    <span style="font-weight:700;font-size:13px;">複製 {{ tableSelection.size }} 個{{ targetLabel }}<\/span>
-                <\/div>
+                    <i class="fa-regular fa-copy" style="font-size:13px;"></i>
+                    <span style="font-weight:700;font-size:13px;">複製 {{ tableSelection.size }} 個{{ targetLabel }}</span>
+                </div>
                 <div class="fopen" @click="openTableSelection">
-                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:13px;"><\/i>
-                    <span style="font-weight:700;font-size:13px;">開啟 {{ tableSelection.size }} 個分頁<\/span>
-                    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--purple-dim);border:1px solid rgba(26,107,116,.28);padding:2px 9px;border-radius:20px;">ctrl+↵<\/span>
-                <\/div>
-            <\/div>
-        <\/transition>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:13px;"></i>
+                    <span style="font-weight:700;font-size:13px;">開啟 {{ tableSelection.size }} 個分頁</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--purple-dim);border:1px solid rgba(26,107,116,.28);padding:2px 9px;border-radius:20px;">ctrl+↵</span>
+                </div>
+            </div>
+        </transition>
 
         <!-- Toast -->
         <transition name="toast">
             <div v-if="showToast" class="toast-box">
-                <i class="fa-solid fa-circle-check" style="color:var(--green);font-size:13px;"><\/i>
-                <span>{{ toastMessage }}<\/span>
-            <\/div>
-        <\/transition>
+                <i class="fa-solid fa-circle-check" style="color:var(--green);font-size:13px;"></i>
+                <span>{{ toastMessage }}</span>
+            </div>
+        </transition>
 
-    <\/div>
+    </div>
 
     <script>
         const { createApp, ref, computed, onMounted, onUnmounted, reactive } = Vue;
@@ -1914,16 +1914,16 @@
             }
         }).mount('#app');
     <\/script>
-<\/body>
+</body>
 
-<\/html>`,
+</html>`,
     multiopen: `<!DOCTYPE html>
 <html lang="zh-Hant">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTU COOL 批量開啟工具<\/title>
+    <title>NTU COOL 批量開啟工具</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         /* === CSS 變數（對齊 TAICA 設計語言）=== */
@@ -2247,76 +2247,76 @@
             .footer  { padding: 10px 20px 13px; }
             .actions { grid-template-columns: 1fr; }
         }
-    <\/style>
-<\/head>
+    </style>
+</head>
 
 <body>
 
     <div class="container">
-        <div class="top-stripe"><\/div>
+        <div class="top-stripe"></div>
 
         <div class="header">
-            <h2>NTU COOL 批量開啟工具<\/h2>
-            <div class="header-sub">BATCH URL OPENER<\/div>
-        <\/div>
+            <h2>NTU COOL 批量開啟工具</h2>
+            <div class="header-sub">BATCH URL OPENER</div>
+        </div>
 
         <div class="form-body">
 
             <div class="form-group">
                 <div class="label-header">
-                    <label for="urlList">輸入資料 <span class="hint">(每行一個網址)<\/span><\/label>
-                    <button id="clearBtn" class="clear-btn" title="清除輸入框內容">清除資料<\/button>
-                <\/div>
+                    <label for="urlList">輸入資料 <span class="hint">(每行一個網址)</span></label>
+                    <button id="clearBtn" class="clear-btn" title="清除輸入框內容">清除資料</button>
+                </div>
                 <textarea id="urlList" placeholder="例如：
 https://cool.ntu.edu.tw/courses/1234
-https://cool.ntu.edu.tw/courses/5678"><\/textarea>
-            <\/div>
+https://cool.ntu.edu.tw/courses/5678"></textarea>
+            </div>
 
             <div class="form-group">
-                <label for="suffix">選擇欲開啟的頁面<\/label>
+                <label for="suffix">選擇欲開啟的頁面</label>
                 <select id="suffix">
                     <optgroup label="➤ 課程頁面批次開啟 (需貼上課程網址)">
-                        <option value="">課程首頁 (Home)<\/option>
-                        <option value="/modules">課程內容 (Modules)<\/option>
-                        <option value="/gradebook">成績 (Grades)<\/option>
-                        <option value="/users">成員 (People)<\/option>
-                        <option value="/assignments">作業 (Assignments)<\/option>
-                        <option value="/discussion_topics">討論 (Discussions)<\/option>
-                        <option value="/quizzes">測驗 (Quizzes)<\/option>
-                        <option value="/settings">設定 (Settings)<\/option>
-                        <option value="/settings/configurations#tab-details">設定 - 詳細資訊<\/option>
-                        <option value="/settings/configurations#tab-sections">設定 - 班別 (Sections)<\/option>
-                        <option value="custom">自訂後綴路徑...<\/option>
-                    <\/optgroup>
+                        <option value="">課程首頁 (Home)</option>
+                        <option value="/modules">課程內容 (Modules)</option>
+                        <option value="/gradebook">成績 (Grades)</option>
+                        <option value="/users">成員 (People)</option>
+                        <option value="/assignments">作業 (Assignments)</option>
+                        <option value="/discussion_topics">討論 (Discussions)</option>
+                        <option value="/quizzes">測驗 (Quizzes)</option>
+                        <option value="/settings">設定 (Settings)</option>
+                        <option value="/settings/configurations#tab-details">設定 - 詳細資訊</option>
+                        <option value="/settings/configurations#tab-sections">設定 - 班別 (Sections)</option>
+                        <option value="custom">自訂後綴路徑...</option>
+                    </optgroup>
                     <optgroup label="➤ 成員搜尋 (需貼上學號/Email)">
-                        <option value="search-users">搜尋使用者 (Admin Search)<\/option>
-                    <\/optgroup>
-                <\/select>
+                        <option value="search-users">搜尋使用者 (Admin Search)</option>
+                    </optgroup>
+                </select>
                 <input type="text" id="customSuffixInput" placeholder="輸入自訂後綴 (例如 /files)" />
-            <\/div>
+            </div>
 
             <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" id="fastMode">
-                    <label for="fastMode">快速模式（無延遲開啟）<\/label>
-                <\/div>
-                <div class="warning-text">※ 建議用於分頁數不多的情況，不建議使用於開大量 Google Workspace 相關網站<\/div>
-            <\/div>
+                    <label for="fastMode">快速模式（無延遲開啟）</label>
+                </div>
+                <div class="warning-text">※ 建議用於分頁數不多的情況，不建議使用於開大量 Google Workspace 相關網站</div>
+            </div>
 
-            <div class="divider"><\/div>
+            <div class="divider"></div>
 
             <div class="actions">
-                <button id="openBtn" class="main-btn">執行批次開啟<\/button>
-                <button id="openRawBtn" class="sub-btn" title="忽略選單設定，直接開啟上方網址">直接開啟網址<\/button>
-            <\/div>
+                <button id="openBtn" class="main-btn">執行批次開啟</button>
+                <button id="openRawBtn" class="sub-btn" title="忽略選單設定，直接開啟上方網址">直接開啟網址</button>
+            </div>
 
-        <\/div>
+        </div>
 
         <div class="footer">
-            <span>NTU COOL · BATCH OPENER<\/span>
-            <span>cool.ntu.edu.tw<\/span>
-        <\/div>
-    <\/div>
+            <span>NTU COOL · BATCH OPENER</span>
+            <span>cool.ntu.edu.tw</span>
+        </div>
+    </div>
 
     <script>
         const suffixSelect = document.getElementById('suffix');
@@ -2507,16 +2507,16 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
             }, entries.length * delay + 500);
         });
     <\/script>
-<\/body>
+</body>
 
-<\/html>
+</html>
 `,
     mailgen: `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>信件生成器<\/title>
+  <title>信件生成器</title>
   <script src="https://cdn.tailwindcss.com"><\/script>
   <script>
     tailwind.config = {
@@ -2900,214 +2900,214 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
       body { padding: 12px 10px 40px; }
       .mail-hdr-inner { flex-direction: column; align-items: flex-start; }
     }
-  <\/style>
-<\/head>
+  </style>
+</head>
 <body>
   <div class="mail-wrap">
 
     <!-- Header -->
     <div class="mail-hdr">
-      <div class="mail-hdr-stripe"><\/div>
+      <div class="mail-hdr-stripe"></div>
       <div class="mail-hdr-inner">
         <div>
-          <div class="mail-hdr-title">信件生成器<\/div>
-          <div class="mail-hdr-sub">MAIL GENERATOR · BATCH EMAIL COMPOSER<\/div>
-        <\/div>
+          <div class="mail-hdr-title">信件生成器</div>
+          <div class="mail-hdr-sub">MAIL GENERATOR · BATCH EMAIL COMPOSER</div>
+        </div>
         <div class="tab-pills">
-          <button onclick="switchTab('data')" id="btn-tab-data" class="tab-pill on">1. 匯入資料<\/button>
-          <button onclick="switchTab('template')" id="btn-tab-template" class="tab-pill">2. 編輯模板<\/button>
-          <button onclick="switchTab('preview')" id="btn-tab-preview" class="tab-pill">3. 草稿預覽<\/button>
-        <\/div>
-      <\/div>
-    <\/div>
+          <button onclick="switchTab('data')" id="btn-tab-data" class="tab-pill on">1. 匯入資料</button>
+          <button onclick="switchTab('template')" id="btn-tab-template" class="tab-pill">2. 編輯模板</button>
+          <button onclick="switchTab('preview')" id="btn-tab-preview" class="tab-pill">3. 草稿預覽</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Content -->
     <div style="padding: 24px 28px;">
 
       <!-- ── TAB 1: 匯入資料 ── -->
-      <div id="tab-data" class="tab-content active" style="display: flex; flex-direction: column; gap: 16px;">
+      <div id="tab-data" class="tab-content active" style="flex-direction: column; gap: 16px;">
 
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">資料來源<\/div>
+            <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">資料來源</div>
             <label class="btn-ghost" style="cursor: pointer;" title="支援 .csv 或 .txt 檔案">
-              <i data-lucide="upload" style="width:13px;height:13px;"><\/i> 上傳 CSV
+              <i data-lucide="upload" style="width:13px;height:13px;"></i> 上傳 CSV
               <input type="file" id="file-upload" accept=".csv,.txt,.tsv" class="hidden" onchange="handleFileUpload(this)">
-            <\/label>
+            </label>
             <button onclick="clearData()" class="btn-danger" title="清空所有資料">
-              <i data-lucide="trash-2" style="width:13px;height:13px;"><\/i> 清空
-            <\/button>
-          <\/div>
-          <span id="data-count" class="s-label" style="background: var(--bg3); border: 1px solid var(--border); padding: 3px 10px; border-radius: 4px;">共 0 筆<\/span>
-        <\/div>
+              <i data-lucide="trash-2" style="width:13px;height:13px;"></i> 清空
+            </button>
+          </div>
+          <span id="data-count" class="s-label" style="background: var(--bg3); border: 1px solid var(--border); padding: 3px 10px; border-radius: 4px;">共 0 筆</span>
+        </div>
 
         <div class="info-box">
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px;">使用說明<\/div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px;">使用說明</div>
           <ul style="list-style: disc; padding-left: 18px; line-height: 1.9; font-size: 12px; color: var(--t2);">
-            <li>請直接從 Excel/Google Sheets 複製表格並貼在下方，或使用「上傳 CSV」按鈕。<\/li>
-            <li><b>支援多行資料：<\/b>若同一格有多個 Email（換行分隔），系統會自動辨識並處理。<\/li>
-            <li>第一列必須是「標題」（例如：姓名、Email、CC），這些將成為可插入的變數。<\/li>
-            <li><b>動態超連結：<\/b>在「插入超連結」時點擊變數按鈕，例如 <code style="font-family: 'IBM Plex Mono'; background: var(--bg3); padding: 1px 4px; border-radius: 3px;">{課程連結}<\/code>。<\/li>
-            <li style="color: var(--cyan); font-weight: 600;">若連結欄位為空，系統會自動將該連結轉換為純文字。<\/li>
-            <li>自動抓取關鍵字 — 收件人：Email / 信箱 / 收件人；副本：CC / 副本；密件副本：BCC / 密件副本<\/li>
-          <\/ul>
-        <\/div>
+            <li>請直接從 Excel/Google Sheets 複製表格並貼在下方，或使用「上傳 CSV」按鈕。</li>
+            <li><b>支援多行資料：</b>若同一格有多個 Email（換行分隔），系統會自動辨識並處理。</li>
+            <li>第一列必須是「標題」（例如：姓名、Email、CC），這些將成為可插入的變數。</li>
+            <li><b>動態超連結：</b>在「插入超連結」時點擊變數按鈕，例如 <code style="font-family: 'IBM Plex Mono'; background: var(--bg3); padding: 1px 4px; border-radius: 3px;">{課程連結}</code>。</li>
+            <li style="color: var(--cyan); font-weight: 600;">若連結欄位為空，系統會自動將該連結轉換為純文字。</li>
+            <li>自動抓取關鍵字 — 收件人：Email / 信箱 / 收件人；副本：CC / 副本；密件副本：BCC / 密件副本</li>
+          </ul>
+        </div>
 
         <div>
-          <div class="panel-label"><i data-lucide="table" style="width:12px;height:12px;"><\/i> 貼上資料<\/div>
+          <div class="panel-label"><i data-lucide="table" style="width:12px;height:12px;"></i> 貼上資料</div>
           <textarea id="csv-input" class="field-input" style="height: 180px; resize: vertical; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.65;"
-            placeholder="在此貼上 Excel 資料（Tab 分隔）或 CSV..."><\/textarea>
-        <\/div>
+            placeholder="在此貼上 Excel 資料（Tab 分隔）或 CSV..."></textarea>
+        </div>
 
         <div class="panel" style="padding: 12px 16px;">
           <div class="check-row" style="padding: 8px 0; background: none; border: none; border-radius: 0;">
             <input type="checkbox" id="group-enable" onchange="toggleGrouping()">
-            <label for="group-enable" style="font-weight: 600;">啟用合併寄信（Group Merge）<\/label>
-          <\/div>
+            <label for="group-enable" style="font-weight: 600;">啟用合併寄信（Group Merge）</label>
+          </div>
           <div id="group-settings" class="hidden" style="display: none; margin-top: 10px; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--t2);">
-            <span>依據欄位合併：<\/span>
-            <select id="group-column" class="field-input" style="width: auto; display: inline-block; padding: 5px 10px;" onchange="updateGroupingColumn()"><\/select>
-            <span style="font-size: 11px; color: var(--t3);">（相同值的列將合併，Email / CC / BCC 用分號串接）<\/span>
-          <\/div>
-        <\/div>
+            <span>依據欄位合併：</span>
+            <select id="group-column" class="field-input" style="width: auto; display: inline-block; padding: 5px 10px;" onchange="updateGroupingColumn()"></select>
+            <span style="font-size: 11px; color: var(--t3);">（相同值的列將合併，Email / CC / BCC 用分號串接）</span>
+          </div>
+        </div>
 
         <div id="table-preview-container" class="hidden"
-          style="overflow: auto; max-height: 400px; border: 1px solid var(--border2); border-radius: 8px;"><\/div>
+          style="overflow: auto; max-height: 400px; border: 1px solid var(--border2); border-radius: 8px;"></div>
 
-      <\/div>
+      </div>
 
       <!-- ── TAB 2: 編輯模板 ── -->
-      <div id="tab-template" class="tab-content" style="display: flex; flex-direction: column; gap: 20px;">
+      <div id="tab-template" class="tab-content" style="flex-direction: column; gap: 20px;">
 
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">信件模板<\/div>
+            <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">信件模板</div>
             <button onclick="clearTemplate()" class="btn-danger">
-              <i data-lucide="trash-2" style="width:13px;height:13px;"><\/i> 清空模板
-            <\/button>
-          <\/div>
+              <i data-lucide="trash-2" style="width:13px;height:13px;"></i> 清空模板
+            </button>
+          </div>
           <div style="text-align: right; min-width: 200px;">
-            <div class="panel-label" style="justify-content: flex-end; margin-bottom: 6px;">插入變數<\/div>
-            <div id="variable-buttons" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end;"><\/div>
+            <div class="panel-label" style="justify-content: flex-end; margin-bottom: 6px;">插入變數</div>
+            <div id="variable-buttons" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end;"></div>
             <div style="font-size: 11px; color: var(--t3); margin-top: 6px; line-height: 1.7;">
-              <code style="font-family: 'IBM Plex Mono';">:姓<\/code> 取第一個字（如 <code style="font-family: 'IBM Plex Mono';">{姓名:姓}<\/code>）<br>
-              <code style="font-family: 'IBM Plex Mono';">:前<\/code> 取 @ 前內容（如 <code style="font-family: 'IBM Plex Mono';">{Email:前}<\/code>）
-            <\/div>
-          <\/div>
-        <\/div>
+              <code style="font-family: 'IBM Plex Mono';">:姓</code> 取第一個字（如 <code style="font-family: 'IBM Plex Mono';">{姓名:姓}</code>）<br>
+              <code style="font-family: 'IBM Plex Mono';">:前</code> 取 @ 前內容（如 <code style="font-family: 'IBM Plex Mono';">{Email:前}</code>）
+            </div>
+          </div>
+        </div>
 
         <div>
-          <div class="panel-label">主旨<\/div>
+          <div class="panel-label">主旨</div>
           <input type="text" id="subject-input" class="field-input" placeholder="例：關於 {學校} 的 {課程名稱} 通知">
-        <\/div>
+        </div>
 
         <div>
-          <div class="panel-label">內文 <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--t3);">（預設字體 Calibri 12pt，貼入 Outlook 格式不變）<\/span><\/div>
+          <div class="panel-label">內文 <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--t3);">（預設字體 Calibri 12pt，貼入 Outlook 格式不變）</span></div>
 
           <!-- Toolbar -->
           <div class="toolbar-wrap">
             <button class="toolbar-btn" onmousedown="handleToolbar(event, 'removeFormat')" title="清除格式">
-              <i data-lucide="eraser" style="width:15px;height:15px;"><\/i>
-            <\/button>
-            <div class="toolbar-sep"><\/div>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'bold')" title="粗體"><i data-lucide="bold" style="width:15px;height:15px;"><\/i><\/button>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'italic')" title="斜體"><i data-lucide="italic" style="width:15px;height:15px;"><\/i><\/button>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'underline')" title="底線"><i data-lucide="underline" style="width:15px;height:15px;"><\/i><\/button>
-            <div class="toolbar-sep"><\/div>
+              <i data-lucide="eraser" style="width:15px;height:15px;"></i>
+            </button>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'bold')" title="粗體"><i data-lucide="bold" style="width:15px;height:15px;"></i></button>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'italic')" title="斜體"><i data-lucide="italic" style="width:15px;height:15px;"></i></button>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'underline')" title="底線"><i data-lucide="underline" style="width:15px;height:15px;"></i></button>
+            <div class="toolbar-sep"></div>
 
             <!-- Text color -->
             <div style="position: relative; display: inline-block;">
               <button class="toolbar-btn" onmousedown="toggleColorMenu(event, 'text-color-menu')" title="文字顏色" style="gap: 4px;">
-                <i data-lucide="type" style="width:15px;height:15px;"><\/i>
-                <div style="width:10px;height:10px;border-radius:50%;background:#000;border:1px solid var(--border2);"><\/div>
-              <\/button>
+                <i data-lucide="type" style="width:15px;height:15px;"></i>
+                <div style="width:10px;height:10px;border-radius:50%;background:#000;border:1px solid var(--border2);"></div>
+              </button>
               <div id="text-color-menu" class="color-menu" style="position:absolute;top:100%;left:0;margin-top:4px;padding:12px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(50,32,10,0.12);z-index:50;width:148px;">
-                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:var(--t3);margin-bottom:8px;">文字顏色<\/div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:var(--t3);margin-bottom:8px;">文字顏色</div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-                  <button onmousedown="applyColor(event,'foreColor','#000000')" style="width:22px;height:22px;border-radius:50%;background:#000;border:1px solid var(--border2);cursor:pointer;" title="黑色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#FF0000')" style="width:22px;height:22px;border-radius:50%;background:#FF0000;border:1px solid var(--border2);cursor:pointer;" title="紅色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#0000FF')" style="width:22px;height:22px;border-radius:50%;background:#0000FF;border:1px solid var(--border2);cursor:pointer;" title="藍色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#008000')" style="width:22px;height:22px;border-radius:50%;background:#008000;border:1px solid var(--border2);cursor:pointer;" title="綠色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#FFA500')" style="width:22px;height:22px;border-radius:50%;background:#FFA500;border:1px solid var(--border2);cursor:pointer;" title="橘色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#800080')" style="width:22px;height:22px;border-radius:50%;background:#800080;border:1px solid var(--border2);cursor:pointer;" title="紫色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#808080')" style="width:22px;height:22px;border-radius:50%;background:#808080;border:1px solid var(--border2);cursor:pointer;" title="灰色"><\/button>
-                  <button onmousedown="applyColor(event,'foreColor','#FFFFFF')" style="width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--border2);cursor:pointer;" title="白色"><\/button>
-                <\/div>
-              <\/div>
-            <\/div>
+                  <button onmousedown="applyColor(event,'foreColor','#000000')" style="width:22px;height:22px;border-radius:50%;background:#000;border:1px solid var(--border2);cursor:pointer;" title="黑色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#FF0000')" style="width:22px;height:22px;border-radius:50%;background:#FF0000;border:1px solid var(--border2);cursor:pointer;" title="紅色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#0000FF')" style="width:22px;height:22px;border-radius:50%;background:#0000FF;border:1px solid var(--border2);cursor:pointer;" title="藍色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#008000')" style="width:22px;height:22px;border-radius:50%;background:#008000;border:1px solid var(--border2);cursor:pointer;" title="綠色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#FFA500')" style="width:22px;height:22px;border-radius:50%;background:#FFA500;border:1px solid var(--border2);cursor:pointer;" title="橘色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#800080')" style="width:22px;height:22px;border-radius:50%;background:#800080;border:1px solid var(--border2);cursor:pointer;" title="紫色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#808080')" style="width:22px;height:22px;border-radius:50%;background:#808080;border:1px solid var(--border2);cursor:pointer;" title="灰色"></button>
+                  <button onmousedown="applyColor(event,'foreColor','#FFFFFF')" style="width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--border2);cursor:pointer;" title="白色"></button>
+                </div>
+              </div>
+            </div>
 
             <!-- Highlight color -->
             <div style="position: relative; display: inline-block;">
               <button class="toolbar-btn" onmousedown="toggleColorMenu(event, 'bg-color-menu')" title="螢光筆" style="gap: 4px;">
-                <i data-lucide="highlighter" style="width:15px;height:15px;"><\/i>
-                <div style="width:10px;height:10px;border-radius:50%;background:#FFFF00;border:1px solid var(--border2);"><\/div>
-              <\/button>
+                <i data-lucide="highlighter" style="width:15px;height:15px;"></i>
+                <div style="width:10px;height:10px;border-radius:50%;background:#FFFF00;border:1px solid var(--border2);"></div>
+              </button>
               <div id="bg-color-menu" class="color-menu" style="position:absolute;top:100%;left:0;margin-top:4px;padding:12px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(50,32,10,0.12);z-index:50;width:148px;">
-                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:var(--t3);margin-bottom:8px;">螢光筆<\/div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:var(--t3);margin-bottom:8px;">螢光筆</div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-                  <button onmousedown="applyColor(event,'hiliteColor','#FFFF00')" style="width:22px;height:22px;border-radius:50%;background:#FFFF00;border:1px solid var(--border2);cursor:pointer;" title="黃色"><\/button>
-                  <button onmousedown="applyColor(event,'hiliteColor','#00FF00')" style="width:22px;height:22px;border-radius:50%;background:#00FF00;border:1px solid var(--border2);cursor:pointer;" title="綠色"><\/button>
-                  <button onmousedown="applyColor(event,'hiliteColor','#00FFFF')" style="width:22px;height:22px;border-radius:50%;background:#00FFFF;border:1px solid var(--border2);cursor:pointer;" title="藍色"><\/button>
-                  <button onmousedown="applyColor(event,'hiliteColor','#FF00FF')" style="width:22px;height:22px;border-radius:50%;background:#FF00FF;border:1px solid var(--border2);cursor:pointer;" title="粉色"><\/button>
-                  <button onmousedown="applyColor(event,'hiliteColor','#D1D5DB')" style="width:22px;height:22px;border-radius:50%;background:#D1D5DB;border:1px solid var(--border2);cursor:pointer;" title="灰色"><\/button>
+                  <button onmousedown="applyColor(event,'hiliteColor','#FFFF00')" style="width:22px;height:22px;border-radius:50%;background:#FFFF00;border:1px solid var(--border2);cursor:pointer;" title="黃色"></button>
+                  <button onmousedown="applyColor(event,'hiliteColor','#00FF00')" style="width:22px;height:22px;border-radius:50%;background:#00FF00;border:1px solid var(--border2);cursor:pointer;" title="綠色"></button>
+                  <button onmousedown="applyColor(event,'hiliteColor','#00FFFF')" style="width:22px;height:22px;border-radius:50%;background:#00FFFF;border:1px solid var(--border2);cursor:pointer;" title="藍色"></button>
+                  <button onmousedown="applyColor(event,'hiliteColor','#FF00FF')" style="width:22px;height:22px;border-radius:50%;background:#FF00FF;border:1px solid var(--border2);cursor:pointer;" title="粉色"></button>
+                  <button onmousedown="applyColor(event,'hiliteColor','#D1D5DB')" style="width:22px;height:22px;border-radius:50%;background:#D1D5DB;border:1px solid var(--border2);cursor:pointer;" title="灰色"></button>
                   <button onmousedown="applyColor(event,'hiliteColor','transparent')" style="width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#c24128;" title="清除">
-                    <i data-lucide="x" style="width:11px;height:11px;"><\/i>
-                  <\/button>
-                <\/div>
-              <\/div>
-            <\/div>
+                    <i data-lucide="x" style="width:11px;height:11px;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-            <div class="toolbar-sep"><\/div>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'insertUnorderedList')" title="項目符號"><i data-lucide="list" style="width:15px;height:15px;"><\/i><\/button>
-            <div class="toolbar-sep"><\/div>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'createLink')" title="插入超連結"><i data-lucide="link" style="width:15px;height:15px;"><\/i><\/button>
-            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'unlink')" title="移除超連結"><i data-lucide="link-2-off" style="width:15px;height:15px;"><\/i><\/button>
-          <\/div>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'insertUnorderedList')" title="項目符號"><i data-lucide="list" style="width:15px;height:15px;"></i></button>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'createLink')" title="插入超連結"><i data-lucide="link" style="width:15px;height:15px;"></i></button>
+            <button class="toolbar-btn" onmousedown="handleToolbar(event, 'unlink')" title="移除超連結"><i data-lucide="link-2-off" style="width:15px;height:15px;"></i></button>
+          </div>
 
           <div id="editor-content" contenteditable="true"
             style="width:100%;padding:16px;border:1px solid var(--border2);border-radius:0 0 6px 6px;background:var(--bg2);overflow-y:auto;transition:box-shadow 0.15s;">
-          <\/div>
-        <\/div>
+          </div>
+        </div>
 
-      <\/div>
+      </div>
 
       <!-- ── TAB 3: 草稿預覽 ── -->
-      <div id="tab-preview" class="tab-content" style="display: flex; flex-direction: column; gap: 16px;">
+      <div id="tab-preview" class="tab-content" style="flex-direction: column; gap: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">草稿預覽<\/div>
+          <div style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; color: var(--cyan);">草稿預覽</div>
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--t2);">
             <input type="checkbox" id="bcc-toggle" style="accent-color:var(--cyan);width:14px;height:14px;" onchange="toggleBCC()">
             顯示密件副本（BCC）
-          <\/label>
-        <\/div>
+          </label>
+        </div>
         <div id="preview-container" style="display: flex; flex-direction: column;">
           <div style="text-align:center;padding:40px 20px;background:var(--bg3);border:1px dashed var(--border2);border-radius:8px;color:var(--t3);font-size:13px;">
             請先輸入資料並確認模板
-          <\/div>
-        <\/div>
-      <\/div>
+          </div>
+        </div>
+      </div>
 
-    <\/div>
-  <\/div>
+    </div>
+  </div>
 
   <!-- Link Modal -->
   <div id="link-modal" style="position:fixed;inset:0;background:rgba(28,24,18,0.5);display:flex;align-items:center;justify-content:center;z-index:100;" class="hidden animate-fade-in">
     <div style="background:var(--bg2);border-radius:10px;border:1px solid var(--border2);box-shadow:0 8px 32px rgba(50,32,10,0.18);padding:24px;width:100%;max-width:440px;position:relative;">
       <div style="font-family:'DM Serif Display',serif;font-style:italic;font-size:18px;color:#1a2f6e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-        <i data-lucide="link" style="width:18px;height:18px;color:var(--cyan);"><\/i> 插入超連結
-      <\/div>
-      <div class="panel-label">連結網址（URL）<\/div>
+        <i data-lucide="link" style="width:18px;height:18px;color:var(--cyan);"></i> 插入超連結
+      </div>
+      <div class="panel-label">連結網址（URL）</div>
       <input type="text" id="link-url-input" class="field-input" style="margin-bottom:16px;" placeholder="https://example.com/...">
       <div>
-        <div class="panel-label" style="margin-bottom:6px;">點擊插入變數<\/div>
-        <div id="link-modal-variables" style="display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow-y:auto;padding:4px 0;"><\/div>
-      <\/div>
+        <div class="panel-label" style="margin-bottom:6px;">點擊插入變數</div>
+        <div id="link-modal-variables" style="display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow-y:auto;padding:4px 0;"></div>
+      </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
-        <button onclick="closeLinkModal()" class="btn-ghost">取消<\/button>
-        <button onclick="confirmInsertLink()" class="btn-primary">確認插入<\/button>
-      <\/div>
-    <\/div>
-  <\/div>
+        <button onclick="closeLinkModal()" class="btn-ghost">取消</button>
+        <button onclick="confirmInsertLink()" class="btn-primary">確認插入</button>
+      </div>
+    </div>
+  </div>
 
 <script>
         // --- 初始狀態與變數 ---
@@ -3117,7 +3117,7 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
 張志明,chang@example.com,清華大學,資料結構,
 陳小美,may@example.com,台灣大學,網頁設計,\`;
 
-        const defaultBody = \`<div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您好 <b>{姓名:姓}<\/b> 老師：<\/span><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">感謝您在 {學校} 開設「<span style="color: blue;">{課程名稱}<\/span>」。<\/span><\/div><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您的課程連結如下：<\/span><\/div><div><a href="{課程連結}" style="font-family: Calibri, sans-serif; font-size: 12pt;">{課程連結}<\/a><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">(若連結為空，則不顯示連結)<\/span><\/div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">教務團隊 敬上<\/span><\/div>\`;
+        const defaultBody = \`<div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您好 <b>{姓名:姓}</b> 老師：</span></div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">感謝您在 {學校} 開設「<span style="color: blue;">{課程名稱}</span>」。</span></div><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">您的課程連結如下：</span></div><div><a href="{課程連結}" style="font-family: Calibri, sans-serif; font-size: 12pt;">{課程連結}</a></div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">(若連結為空，則不顯示連結)</span></div><br><div><span style="font-family: Calibri, sans-serif; font-size: 12pt;">教務團隊 敬上</span></div>\`;
 
         let state = {
             csvInput: defaultData,
@@ -3341,20 +3341,20 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
             if (state.displayData.length > 0) {
                 let tableHTML = \`<table class="min-w-full divide-y divide-gray-200"><thead class="bg-warm-bg sticky-header"><tr>\`;
                 state.headers.forEach(h => {
-                    tableHTML += \`<th class="px-3 py-2 text-left text-xs font-medium text-warm-gray uppercase whitespace-nowrap bg-warm-bg">\${h}<\/th>\`;
+                    tableHTML += \`<th class="px-3 py-2 text-left text-xs font-medium text-warm-gray uppercase whitespace-nowrap bg-warm-bg">\${h}</th>\`;
                 });
-                tableHTML += \`<\/tr><\/thead><tbody class="bg-white divide-y divide-gray-200">\`;
+                tableHTML += \`</tr></thead><tbody class="bg-white divide-y divide-gray-200">\`;
 
                 state.displayData.forEach(row => {
                     tableHTML += \`<tr>\`;
                     state.headers.forEach(h => {
                         let cellContent = row[h] || '';
                         if (cellContent.length > 30) cellContent = cellContent.substring(0, 30) + '...';
-                        tableHTML += \`<td class="px-3 py-2 text-sm text-warm-black whitespace-nowrap" title="\${row[h]}">\${cellContent}<\/td>\`;
+                        tableHTML += \`<td class="px-3 py-2 text-sm text-warm-black whitespace-nowrap" title="\${row[h]}">\${cellContent}</td>\`;
                     });
-                    tableHTML += \`<\/tr>\`;
+                    tableHTML += \`</tr>\`;
                 });
-                tableHTML += \`<\/tbody><\/table>\`;
+                tableHTML += \`</tbody></table>\`;
                 els.tablePreview.innerHTML = tableHTML;
                 els.tablePreview.classList.remove('hidden');
             } else {
@@ -3651,7 +3651,7 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
         function renderPreview() {
             const bodyTemplate = els.editor.innerHTML;
             if (state.displayData.length === 0) {
-                els.previewContainer.innerHTML = '<div class="text-center py-10 bg-warm-bg border border-dashed border-warm-border rounded-lg text-warm-gray">沒有資料，請先至「匯入資料」頁籤貼上資料。<\/div>';
+                els.previewContainer.innerHTML = '<div class="text-center py-10 bg-warm-bg border border-dashed border-warm-border rounded-lg text-warm-gray">沒有資料，請先至「匯入資料」頁籤貼上資料。</div>';
                 return;
             }
             els.previewContainer.innerHTML = '';
@@ -3682,57 +3682,57 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
                         <span class="font-bold text-warm-black flex items-center gap-2">
                             #\${index + 1}
                             <span class="status-badge hidden text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
-                                <i data-lucide="check-circle" class="w-3 h-3 inline mr-1"><\/i>已複製
-                            <\/span>
-                        <\/span>
-                    <\/div>
+                                <i data-lucide="check-circle" class="w-3 h-3 inline mr-1"></i>已複製
+                            </span>
+                        </span>
+                    </div>
                     <div class="p-4 space-y-3">
                         <div class="flex items-start gap-3">
-                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">收件人<\/span>
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">收件人</span>
                             <div class="flex-1 flex gap-2">
                                 <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-primary break-all">
-                                    \${recipientEmail || '<span class="text-gray-400">未填寫<\/span>'}
-                                <\/div>
-                                <button onclick="copySimpleText(this, '\${recipientEmail}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製收件人"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
-                            <\/div>
-                        <\/div>
+                                    \${recipientEmail || '<span class="text-gray-400">未填寫</span>'}
+                                </div>
+                                <button onclick="copySimpleText(this, '\${recipientEmail}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製收件人"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
                         <div class="flex items-start gap-3">
-                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">副本<\/span>
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">副本</span>
                             <div class="flex-1 flex gap-2">
                                 <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-warm-gray break-all">
-                                    \${dynamicCC || '<span class="text-gray-400">無<\/span>'}
-                                <\/div>
-                                <button onclick="copySimpleText(this, '\${dynamicCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製副本"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
-                            <\/div>
-                        <\/div>
+                                    \${dynamicCC || '<span class="text-gray-400">無</span>'}
+                                </div>
+                                <button onclick="copySimpleText(this, '\${dynamicCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製副本"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
                         <div class="items-start gap-3 bcc-row">
-                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">密件副本<\/span>
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">密件副本</span>
                             <div class="flex-1 flex gap-2">
                                 <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-mono text-warm-gray break-all">
-                                    \${dynamicBCC || '<span class="text-gray-400">無<\/span>'}
-                                <\/div>
-                                <button onclick="copySimpleText(this, '\${dynamicBCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製密件副本"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
-                            <\/div>
-                        <\/div>
+                                    \${dynamicBCC || '<span class="text-gray-400">無</span>'}
+                                </div>
+                                <button onclick="copySimpleText(this, '\${dynamicBCC}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製密件副本"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
                         <div class="flex items-start gap-3">
-                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">主旨<\/span>
+                            <span class="text-sm font-bold text-warm-gray w-14 pt-1.5 text-right">主旨</span>
                             <div class="flex-1 flex gap-2">
                                 <div class="flex-1 p-2 bg-warm-bg rounded border border-warm-border text-sm font-medium text-warm-black">
                                     \${finalSubject}
-                                <\/div>
-                                <button onclick="copySimpleText(this, '\${finalSubject}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製主旨"><i data-lucide="copy" class="w-4 h-4"><\/i><\/button>
-                            <\/div>
-                        <\/div>
+                                </div>
+                                <button onclick="copySimpleText(this, '\${finalSubject}')" class="p-2 text-warm-gray hover:text-primary hover:bg-info-bg rounded border border-warm-border transition-colors" title="複製主旨"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
                         <div class="mt-4 pt-4 border-t border-warm-border">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-bold text-warm-gray uppercase">內文預覽<\/span>
+                                <span class="text-xs font-bold text-warm-gray uppercase">內文預覽</span>
                                 <button onclick="copyToClipboard(this, \${index})" data-content="\${encodeURIComponent(finalBodyHtml)}" class="flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded text-sm hover:bg-primary-hover transition-colors shadow-sm font-bold">
-                                    <i data-lucide="copy" class="h-4 w-4"><\/i> 複製內文 (含格式)
-                                <\/button>
-                            <\/div>
-                            <div class="p-4 bg-white border border-warm-border rounded text-sm text-warm-black leading-relaxed max-w-none email-content" style="font-family: Calibri, sans-serif; font-size: 12pt;">\${finalBodyHtml}<\/div>
-                        <\/div>
-                    <\/div>
+                                    <i data-lucide="copy" class="h-4 w-4"></i> 複製內文 (含格式)
+                                </button>
+                            </div>
+                            <div class="p-4 bg-white border border-warm-border rounded text-sm text-warm-black leading-relaxed max-w-none email-content" style="font-family: Calibri, sans-serif; font-size: 12pt;">\${finalBodyHtml}</div>
+                        </div>
+                    </div>
                 \`;
                 els.previewContainer.appendChild(card);
             });
@@ -3802,7 +3802,7 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
             try {
                 document.execCommand('copy');
                 const originalIcon = btn.innerHTML;
-                btn.innerHTML = \`<i data-lucide="check" class="w-4 h-4 text-green-600"><\/i>\`;
+                btn.innerHTML = \`<i data-lucide="check" class="w-4 h-4 text-green-600"></i>\`;
                 if (window.lucide && typeof window.lucide.createIcons === 'function') {
                     lucide.createIcons();
                 }
@@ -3939,7 +3939,7 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
             });
 
             // Wrap in a div that enforces global font/color for the paste operation
-            const finalHtml = \`<div style="font-family: \${fontFamily}; font-size: \${fontSize}; color: \${defaultColor};">\${processor.innerHTML}<\/div>\`;
+            const finalHtml = \`<div style="font-family: \${fontFamily}; font-size: \${fontSize}; color: \${defaultColor};">\${processor.innerHTML}</div>\`;
             const plainText = processor.innerText || processor.textContent;
 
             const listener = (e) => {
@@ -3953,7 +3953,7 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
                 document.removeEventListener('copy', listener);
                 if (successful) {
                     const originalHtml = btn.innerHTML;
-                    btn.innerHTML = \`<i data-lucide="check" class="h-4 w-4"><\/i> 已複製\`;
+                    btn.innerHTML = \`<i data-lucide="check" class="h-4 w-4"></i> 已複製\`;
                     btn.classList.remove('bg-primary', 'hover:bg-primary-hover');
                     btn.classList.add('bg-green-600', 'hover:bg-green-700');
 
@@ -4001,8 +4001,8 @@ https://cool.ntu.edu.tw/courses/5678"><\/textarea>
         // Initialize safely
         init();
 <\/script>
-<\/body>
-<\/html>`
+</body>
+</html>`
   };
 
   function loadFrame(id) {
