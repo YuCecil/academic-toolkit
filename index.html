@@ -2133,6 +2133,11 @@
             background: var(--cyan-dim);
         }
 
+        #autoClickAdminWrapper {
+            display: none;
+            margin-top: 8px;
+        }
+
         /* 核取方塊群組 */
         .checkbox-group {
             display: flex;
@@ -2311,6 +2316,12 @@ https://cool.ntu.edu.tw/courses/5678"></textarea>
                     </optgroup>
                 </select>
                 <input type="text" id="customSuffixInput" placeholder="輸入自訂後綴 (例如 /files)" />
+                <div id="autoClickAdminWrapper">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="autoClickAdmin">
+                        <label for="autoClickAdmin">自動點選結果（找到使用者後自動開啟個人頁面）</label>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -2343,15 +2354,49 @@ https://cool.ntu.edu.tw/courses/5678"></textarea>
         const openBtn = document.getElementById('openBtn');
         const openRawBtn = document.getElementById('openRawBtn');
         const clearBtn = document.getElementById('clearBtn');
-        const fastMode = document.getElementById('fastMode'); // 新增
+        const fastMode = document.getElementById('fastMode');
+        const autoClickAdminWrapper = document.getElementById('autoClickAdminWrapper');
+        const autoClickAdmin = document.getElementById('autoClickAdmin');
 
-        // 切換顯示自訂輸入框
+        // 切換顯示自訂輸入框 / 自動點選選項
         suffixSelect.addEventListener('change', () => {
             customInput.style.display = suffixSelect.value === 'custom' ? 'block' : 'none';
+            autoClickAdminWrapper.style.display = suffixSelect.value === 'search-users' ? 'block' : 'none';
             if (suffixSelect.value === 'custom') {
                 customInput.focus();
             }
         });
+
+        // === Admin Worker Mode（由開啟的頁面自動執行）===
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        async function runAdminWorkerMode() {
+            await sleep(1500);
+            let attempts = 0;
+            while (attempts < 20) {
+                const resultLinks = Array.from(document.querySelectorAll('a'))
+                    .map(a => a.href)
+                    .filter(href => {
+                        const clean = href.split('?')[0].split('#')[0].replace(/\\/$/, '');
+                        return /\\/users\\/\\d+$/.test(clean);
+                    });
+                const uniqueUrls = [...new Set(resultLinks)];
+                if (uniqueUrls.length > 0 && uniqueUrls.length <= 5) {
+                    for (let j = 1; j < uniqueUrls.length; j++) {
+                        window.open(uniqueUrls[j], '_blank');
+                    }
+                    window.location.href = uniqueUrls[0];
+                    return;
+                }
+                await sleep(1000);
+                attempts++;
+            }
+        }
+
+        // 若頁面帶有 auto_click_admin=1 參數，啟動 worker mode
+        if (new URLSearchParams(window.location.search).get('auto_click_admin') === '1') {
+            runAdminWorkerMode();
+        }
 
         // === 清除資料功能 ===
         clearBtn.addEventListener('click', () => {
@@ -2415,9 +2460,11 @@ https://cool.ntu.edu.tw/courses/5678"></textarea>
 
             // 模式 A：搜尋學號
             if (suffix === 'search-users') {
+                const withAutoClick = autoClickAdmin.checked;
                 entries.forEach((id, i) => {
                     const cleanId = id.includes('@') ? id.split('@')[0] : id;
-                    const url = \`https://cool.ntu.edu.tw/accounts/1/users?search_term=\${encodeURIComponent(cleanId)}&role_filter_id=&page=\`;
+                    let url = \`https://cool.ntu.edu.tw/accounts/1/users?search_term=\${encodeURIComponent(cleanId)}&role_filter_id=&page=\`;
+                    if (withAutoClick) url += '&auto_click_admin=1';
                     setTimeout(() => {
                         window.open(url, '_blank');
                         updateStatus(\`正在搜尋第 \${i + 1} / \${entries.length} 位使用者...\`);
