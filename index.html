@@ -37,35 +37,54 @@
     .nav-stripe {
       height: 3px;
       background: linear-gradient(90deg, #1a2f6e 0%, var(--cyan) 55%, var(--amber) 100%);
-      position: relative;
     }
-    /* Collapse toggle lives on the stripe */
     .nav-collapse-btn {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--bg2);
-      border: 1px solid var(--border2);
-      cursor: pointer;
+      margin-left: auto;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      color: var(--t3);
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      color: var(--t2);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
       transition: all 0.15s;
-      box-shadow: 0 1px 4px rgba(50,32,10,0.12);
-      z-index: 10;
-      line-height: 1;
+      white-space: nowrap;
     }
     .nav-collapse-btn:hover {
-      background: var(--bg3);
+      background: var(--bg4, #d5cec2);
       color: var(--t1);
       border-color: var(--t3);
     }
+    /* Restore chip shown when navbar is collapsed */
+    #nav-restore {
+      display: none;
+      position: fixed;
+      top: 6px;
+      right: 14px;
+      z-index: 200;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 5px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      box-shadow: 0 2px 8px rgba(50,32,10,0.14);
+      color: var(--t2);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #nav-restore:hover { background: var(--bg3); color: var(--t1); }
 
     .nav-inner {
       max-width: 1400px;
@@ -160,10 +179,9 @@
   </style>
 </head>
 <body>
+  <button id="nav-restore" onclick="toggleNav()">▼ 展開</button>
   <nav class="navbar">
-    <div class="nav-stripe">
-      <button class="nav-collapse-btn" id="nav-toggle" onclick="toggleNav()" title="收合 / 展開導覽列">▲</button>
-    </div>
+    <div class="nav-stripe"></div>
     <div class="nav-inner" id="nav-inner">
       <div class="nav-logo">NTU COOL Support Tools <small>CLIENT SERVICES</small></div>
       <div class="nav-tabs">
@@ -177,6 +195,7 @@
           ✉️ 信件生成器 <span class="nav-badge">MAIL</span>
         </button>
       </div>
+      <button class="nav-collapse-btn" id="nav-toggle" onclick="toggleNav()">▲ 收合</button>
     </div>
   </nav>
 
@@ -4034,9 +4053,10 @@ https://cool.ntu.edu.tw/courses/5678"></textarea>
     navCollapsed = !navCollapsed;
     var inner = document.getElementById('nav-inner');
     var btn = document.getElementById('nav-toggle');
+    var restore = document.getElementById('nav-restore');
     inner.classList.toggle('collapsed', navCollapsed);
-    btn.textContent = navCollapsed ? '▼' : '▲';
-    btn.title = navCollapsed ? '展開導覽列' : '收合導覽列';
+    btn.innerHTML = navCollapsed ? '▲ 收合' : '▲ 收合';
+    restore.style.display = navCollapsed ? 'flex' : 'none';
   }
 
   loadFrame('taica');
